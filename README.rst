@@ -1,0 +1,5 @@
+.. -*-restructuredtext-*-
+
+ascii-graph
+===========
+
