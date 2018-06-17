@@ -1,0 +1,14 @@
+language: go
+
+go:
+  - "1.x"
+  - "1.8.x"
+  - "1.9.x"
+  - "1.10.x"
+  - master
+
+script:
+  - go test -v -race ./.
+
+notifications:
+  email: false
