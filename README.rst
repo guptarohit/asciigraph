@@ -8,7 +8,7 @@ asciigraph
     :alt: Build status
 
 .. image:: https://goreportcard.com/badge/github.com/guptarohit/asciigraph
-    :target: https://goreportcard.com/badge/github.com/guptarohit/asciigraph
+    :target: https://goreportcard.com/report/github.com/guptarohit/asciigraph
     :alt: Go Report Card
 
 .. image:: https://img.shields.io/badge/licence-BSD-blue.svg
