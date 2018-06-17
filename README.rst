@@ -15,6 +15,7 @@ asciigraph
     :target: https://github.com/guptarohit/asciigraph/blob/master/LICENSE
     :alt: License
 
+|
 
 Go package to make lightweight ASCII line graphs ╭┈╯.
 
