@@ -83,8 +83,8 @@ func Plot(series []float64, config map[string]interface{}) string {
 	plot[rows-y0][offset-1] = "┼" // first value
 
 	for x := 0; x < len(series)-1; x++ { // plot the line
-		y0 = int(math.Round(series[x+0]*ratio) - float64(intmin2))
-		y1 = int(math.Round(series[x+1]*ratio) - float64(intmin2))
+		y0 = int(round(series[x+0]*ratio) - float64(intmin2))
+		y1 = int(round(series[x+1]*ratio) - float64(intmin2))
 		if y0 == y1 {
 			plot[rows-y0][x+offset] = "─"
 		} else {
