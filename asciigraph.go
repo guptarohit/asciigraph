@@ -2,10 +2,11 @@ package asciigraph
 
 import (
 	"fmt"
-	"strings"
 	"math"
+	"strings"
 )
 
+// Plot returns ascii graph for a series.
 func Plot(series []float64, config map[string]interface{}) string {
 
 	minimum := minFloat64Slice(series)
@@ -51,7 +52,7 @@ func Plot(series []float64, config map[string]interface{}) string {
 	rows := int(math.Abs(float64(intmax2 - intmin2)))
 	width := len(series) + offset
 
-	plot := [][]string{}
+	var plot [][]string
 
 	// initialise empty 2D grid
 	for i := 0; i < rows+1; i++ {
