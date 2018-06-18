@@ -2,36 +2,23 @@ package asciigraph
 
 import "math"
 
-func minFloat64Slice(v []float64) (m float64) {
-	if len(v) > 0 {
-		m = v[0]
-	} else {
+func minMaxFloat64Slice(v []float64) (min, max float64) {
+	min = math.Inf(1)
+	max = math.Inf(-1)
+
+	if len(v) == 0 {
 		panic("Empty slice")
 	}
 
 	for _, e := range v {
-		if e < m {
-			m = e
+		if e < min {
+			min = e
+		}
+		if e > max {
+			max = e
 		}
 	}
-
-	return m
-}
-
-func maxFloat64Slice(v []float64) (m float64) {
-	if len(v) > 0 {
-		m = v[0]
-	} else {
-		panic("Empty slice")
-	}
-
-	for _, e := range v {
-		if e > m {
-			m = e
-		}
-	}
-
-	return m
+	return
 }
 
 func round(input float64) float64 {

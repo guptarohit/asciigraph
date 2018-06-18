@@ -9,8 +9,7 @@ import (
 // Plot returns ascii graph for a series.
 func Plot(series []float64, config map[string]interface{}) string {
 
-	minimum := minFloat64Slice(series)
-	maximum := maxFloat64Slice(series)
+	minimum, maximum := minMaxFloat64Slice(series)
 
 	interval := math.Abs(maximum - minimum)
 
