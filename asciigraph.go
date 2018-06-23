@@ -9,8 +9,8 @@ import (
 // Plot returns ascii graph for a series.
 func Plot(series []float64, config map[string]interface{}) string {
 
-	var offset, height int
-	var caption, padding string
+	var height, offset int
+	var caption string
 
 	if val, ok := config["width"].(int); ok {
 		series = interpolateArray(series, val)
@@ -24,12 +24,6 @@ func Plot(series []float64, config map[string]interface{}) string {
 		offset = val
 	} else {
 		offset = 3
-	}
-
-	if val, ok := config["padding"].(string); ok {
-		padding = val
-	} else {
-		padding = "           "
 	}
 
 	if val, ok := config["height"].(int); ok {
@@ -122,7 +116,7 @@ func Plot(series []float64, config map[string]interface{}) string {
 
 	// add caption if not empty
 	if caption != "" {
-		lines = append(lines, fmt.Sprintf("%s", padding+caption))
+		lines = append(lines, fmt.Sprintf("%s", caption))
 	}
 
 	return strings.Join(lines, "\n") // join rows
