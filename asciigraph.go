@@ -9,12 +9,16 @@ import (
 // Plot returns ascii graph for a series.
 func Plot(series []float64, config map[string]interface{}) string {
 
+	var offset, height int
+	var caption, padding string
+
+	if val, ok := config["width"].(int); ok {
+		series = interpolateArray(series, val)
+	}
+
 	minimum, maximum := minMaxFloat64Slice(series)
 
 	interval := math.Abs(maximum - minimum)
-
-	var offset, height int
-	var caption, padding string
 
 	if val, ok := config["offset"].(int); ok {
 		offset = val
