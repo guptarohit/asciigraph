@@ -53,24 +53,45 @@ func Plot(series []float64, config map[string]interface{}) string {
 
 	// initialise empty 2D grid
 	for i := 0; i < rows+1; i++ {
-		line := []string{}
+		var line []string
 		for j := 0; j < width; j++ {
 			line = append(line, " ")
 		}
 		plot = append(plot, line)
 	}
 
+	precision := 2
+	logMaximum := math.Log10(math.Abs(maximum)) //to find number of zeros after decimal
+
+	if logMaximum < 0 {
+		// negative log
+		if math.Mod(logMaximum, 1) != 0 {
+			// non-zero digits after decimal
+			precision = precision + int(math.Abs(logMaximum))
+		} else {
+			precision = precision + int(math.Abs(logMaximum)-1.0)
+		}
+
+	} else if logMaximum > 2 {
+		precision = 0
+	}
+
+	maxNumLength := len(fmt.Sprintf("%0.*f", precision, maximum))
+	minNumLength := len(fmt.Sprintf("%0.*f", precision, minimum))
+
+	maxWidth := int(math.Max(float64(maxNumLength), float64(minNumLength)))
+
 	// axis and labels
 	for y := intmin2; y < intmax2+1; y++ {
-		label := fmt.Sprintf("%8.2f", maximum-(float64(y-intmin2)*interval/float64(rows)))
+		label := fmt.Sprintf("%*.*f", maxWidth+1, precision, maximum-(float64(y-intmin2)*interval/float64(rows)))
 		w := y - intmin2
 		h := int(math.Max(float64(offset)-float64(len(label)), 0))
 
 		plot[w][h] = label
 		if y == 0 {
-			plot[y-intmin2][offset-1] = "┼"
+			plot[w][offset-1] = "┼"
 		} else {
-			plot[y-intmin2][offset-1] = "┤"
+			plot[w][offset-1] = "┤"
 		}
 	}
 
@@ -116,7 +137,7 @@ func Plot(series []float64, config map[string]interface{}) string {
 
 	// add caption if not empty
 	if caption != "" {
-		lines = append(lines, fmt.Sprintf("%s", caption))
+		lines = append(lines, fmt.Sprintf("%s", strings.Repeat(" ", offset+maxWidth+2)+caption))
 	}
 
 	return strings.Join(lines, "\n") // join rows
