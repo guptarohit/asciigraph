@@ -76,8 +76,11 @@ Running this example would render the following graph:
   4.00 ┤╭╯ │╭╯   ││││
   3.00 ┼╯  ││    ││││
   2.00 ┤   ╰╯    ╰╯╰╯
-
 ..
+
+Acknowledgement
+----------------
+This package is golang port of library `asciichart <https://github.com/kroitor/asciichart>`_ written by `@kroitor <https://github.com/kroitor>`_.
 
 Contributing
 ------------
