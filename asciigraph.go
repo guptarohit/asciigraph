@@ -12,35 +12,7 @@ func Plot(series []float64, config map[string]interface{}) string {
 	var height, offset int
 	var caption string
 
-	if val, ok := config["width"].(int); ok {
-		series = interpolateArray(series, val)
-	}
-
-	minimum, maximum := minMaxFloat64Slice(series)
-
-	interval := math.Abs(maximum - minimum)
-
-	if val, ok := config["height"].(int); ok {
-		height = val
-	} else {
-		if int(interval) <= 0 {
-			height = int(interval * math.Pow10(int(math.Ceil(-math.Log10(interval)))))
-		} else {
-			height = int(interval)
-		}
-	}
-
-	if val, ok := config["offset"].(int); ok {
-		offset = val
-	} else {
-		offset = 3
-	}
-
-	if val, ok := config["caption"].(string); ok {
-		caption = val
-	} else {
-		caption = ""
-	}
+	minimum, maximum, interval := readConfig(config, &series, &height, &offset, &caption)
 
 	ratio := float64(height) / interval
 

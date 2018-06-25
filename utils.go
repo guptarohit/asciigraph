@@ -61,3 +61,45 @@ func interpolateArray(data []float64, fitCount int) []float64 {
 	interpolatedData = append(interpolatedData, data[len(data)-1])
 	return interpolatedData
 }
+
+func readConfig(config map[string]interface{}, series *[]float64, height, offset *int, caption *string) (minimum, maximum, interval float64) {
+	minimum, maximum = minMaxFloat64Slice(*series)
+	interval = math.Abs(maximum - minimum)
+
+	// no config found, just use these default values
+	if config == nil {
+		*offset = 3
+		if int(interval) <= 0 {
+			*height = int(interval * math.Pow10(int(math.Ceil(-math.Log10(interval)))))
+		} else {
+			*height = int(interval)
+		}
+		return
+	}
+
+	if val, ok := config["width"].(int); ok {
+		*series = interpolateArray(*series, val)
+	}
+
+	if val, ok := config["height"].(int); ok {
+		*height = val
+	} else {
+		if int(interval) <= 0 {
+			*height = int(interval * math.Pow10(int(math.Ceil(-math.Log10(interval)))))
+		} else {
+			*height = int(interval)
+		}
+	}
+
+	if val, ok := config["offset"].(int); ok {
+		*offset = val
+	} else {
+		*offset = 3
+	}
+
+	if val, ok := config["caption"].(string); ok {
+		*caption = val
+	}
+
+	return
+}
