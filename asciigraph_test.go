@@ -1,8 +1,8 @@
 package asciigraph
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestPlot(t *testing.T) {
@@ -88,7 +88,6 @@ func TestPlot(t *testing.T) {
  0.32 ┤│││ │ ││   
  0.23 ┤││╰─╯ ╰╯   
  0.14 ┤╰╯         `},
-
 
 		{
 			input{[]float64{.01, .004, .003, .0042, .0083, .0033, 0.0079},
