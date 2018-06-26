@@ -1,6 +1,7 @@
 package asciigraph
 
 import (
+	"bytes"
 	"fmt"
 	"math"
 	"strings"
@@ -116,14 +117,22 @@ func Plot(series []float64, options ...Option) string {
 	}
 
 	// join columns
-	for _, v := range plot {
-		lines = append(lines, strings.Join(v, ""))
+	var lines bytes.Buffer
+	for h, horizontal := range plot {
+		if h != 0 {
+			lines.WriteRune('\n')
+		}
+		for _, v := range horizontal {
+			lines.WriteString(v)
+		}
 	}
 
 	// add caption if not empty
 	if config.Caption != "" {
-		lines = append(lines, fmt.Sprintf("%s", strings.Repeat(" ", config.Offset+maxWidth+2)+config.Caption))
+		lines.WriteRune('\n')
+		lines.WriteString(strings.Repeat(" ", config.Offset+maxWidth+2))
+		lines.WriteString(config.Caption)
 	}
 
-	return strings.Join(lines, "\n") // join rows
+	return lines.String()
 }
