@@ -114,13 +114,17 @@ func TestPlot(t *testing.T) {
          Plot with custom height & width.`},
 	}
 
-	for i, c := range cases {
+	for i := range cases {
+		name := fmt.Sprintf("%d", i)
+		t.Run(name, func(t *testing.T) {
+			c := cases[i]
 		actual := Plot(c.data, c.opts...)
-		t.Logf("test case %d:\n%s\n", i, actual)
-
 		if actual != c.expected {
 			conf := configure(config{}, c.opts)
-			t.Errorf("Plot(%f, %+v) == %q, want %q", c.data, conf, actual, c.expected)
+				t.Errorf("Plot(%f, %#v)", c.data, conf)
+				t.Logf("expected:\n%s\n", c.expected)
 		}
+			t.Logf("actual:\n%s\n", actual)
+		})
 	}
 }
