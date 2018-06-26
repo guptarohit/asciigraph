@@ -1,6 +1,9 @@
 package asciigraph
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestPlot(t *testing.T) {
 	cases := []struct {
@@ -112,18 +115,38 @@ func TestPlot(t *testing.T) {
  0.19 ┤  ╰╮│     ╰╯     ╰╯     │╭╯   
  0.16 ┤   ╰╯                   ╰╯    
          Plot with custom height & width.`},
+		{
+			[]float64{
+				0, 0, 0, 0, 1.5, 0, 0, -0.5, 9, -3, 0, 0, 1, 2, 1, 0, 0, 0, 0,
+				0, 0, 0, 0, 1.5, 0, 0, -0.5, 8, -3, 0, 0, 1, 2, 1, 0, 0, 0, 0,
+				0, 0, 0, 0, 1.5, 0, 0, -0.5, 10, -3, 0, 0, 1, 2, 1, 0, 0, 0, 0,
+			},
+			[]Option{Offset(10), Height(10), Caption("I'm a doctor, not an engineer.")},
+			`     10.00    ┤                                             ╭╮          
+      8.82    ┤       ╭╮                                    ││          
+      7.64    ┤       ││                 ╭╮                 ││          
+      6.45    ┼       ││                 ││                 ││          
+      5.27    ┤       ││                 ││                 ││          
+      4.09    ┤       ││                 ││                 ││          
+      2.91    ┤       ││   ╭╮            ││   ╭╮            ││   ╭╮     
+      1.73    ┤   ╭╮  ││  ╭╯╰╮       ╭╮  ││  ╭╯╰╮       ╭╮  ││  ╭╯╰╮    
+      0.55    ┼───╯╰──╯│╭─╯  ╰───────╯╰──╯│╭─╯  ╰───────╯╰──╯│╭─╯  ╰─── 
+     -0.64    ┤        ││                 ││                 ││         
+     -1.82    ┤        ╰╯                 ╰╯                 ╰╯         
+     -3.00    ┤                                                         
+                 I'm a doctor, not an engineer.`},
 	}
 
 	for i := range cases {
 		name := fmt.Sprintf("%d", i)
 		t.Run(name, func(t *testing.T) {
 			c := cases[i]
-		actual := Plot(c.data, c.opts...)
-		if actual != c.expected {
-			conf := configure(config{}, c.opts)
+			actual := Plot(c.data, c.opts...)
+			if actual != c.expected {
+				conf := configure(config{}, c.opts)
 				t.Errorf("Plot(%f, %#v)", c.data, conf)
 				t.Logf("expected:\n%s\n", c.expected)
-		}
+			}
 			t.Logf("actual:\n%s\n", actual)
 		})
 	}
