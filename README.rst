@@ -75,6 +75,33 @@ Running this example would render the following graph:
   2.00 ┤   ╰╯    ╰╯╰╯
 ..
 
+Command line interface
+----------------------
+
+This package also brings a small utility for command line usage. Assuming
+`$GOPATH/bin` is in yout `$PATH`, simply `go get` it, and feed it data
+points via stdin:
+
+::
+
+ $ go install github.com/guptarohit/asciigraph/cmd/asciigraph
+ $ seq 1 72 | asciigraph -h 10 -c "plot data from stdin"
+ 72.00 ┼
+ 65.55 ┤                                                                  ╭────
+ 59.09 ┤                                                           ╭──────╯
+ 52.64 ┤                                                    ╭──────╯
+ 46.18 ┤                                             ╭──────╯
+ 39.73 ┤                                      ╭──────╯
+ 33.27 ┤                              ╭───────╯
+ 26.82 ┤                       ╭──────╯
+ 20.36 ┤                ╭──────╯
+ 13.91 ┤         ╭──────╯
+  7.45 ┤  ╭──────╯
+  1.00 ┼──╯
+          plot data from stdin
+..
+
+
 Acknowledgement
 ----------------
 This package is golang port of library `asciichart <https://github.com/kroitor/asciichart>`_ written by `@kroitor <https://github.com/kroitor>`_.
