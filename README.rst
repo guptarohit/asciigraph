@@ -55,10 +55,7 @@ Basic graph
 
     func main() {
         data := []float64{3, 4, 9, 6, 2, 4, 5, 8, 5, 10, 2, 7, 2, 5, 6}
-
-        conf := map[string]interface{}{}
-
-        graph := asciigraph.Plot(data, conf)
+        graph := asciigraph.Plot(data)
 
         fmt.Println(graph)
     }
@@ -77,6 +74,33 @@ Running this example would render the following graph:
   3.00 ┼╯  ││    ││││
   2.00 ┤   ╰╯    ╰╯╰╯
 ..
+
+Command line interface
+----------------------
+
+This package also brings a small utility for command line usage. Assuming
+`$GOPATH/bin` is in yout `$PATH`, simply `go get` it, and feed it data
+points via stdin:
+
+::
+
+ $ go install github.com/guptarohit/asciigraph/cmd/asciigraph
+ $ seq 1 72 | asciigraph -h 10 -c "plot data from stdin"
+ 72.00 ┼
+ 65.55 ┤                                                                  ╭────
+ 59.09 ┤                                                           ╭──────╯
+ 52.64 ┤                                                    ╭──────╯
+ 46.18 ┤                                             ╭──────╯
+ 39.73 ┤                                      ╭──────╯
+ 33.27 ┤                              ╭───────╯
+ 26.82 ┤                       ╭──────╯
+ 20.36 ┤                ╭──────╯
+ 13.91 ┤         ╭──────╯
+  7.45 ┤  ╭──────╯
+  1.00 ┼──╯
+          plot data from stdin
+..
+
 
 Acknowledgement
 ----------------
