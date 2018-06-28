@@ -73,18 +73,27 @@ Running this example would render the following graph:
   4.00 ┤╭╯ │╭╯   ││││
   3.00 ┼╯  ││    ││││
   2.00 ┤   ╰╯    ╰╯╰╯
+
 ..
+
 
 Command line interface
 ----------------------
 
 This package also brings a small utility for command line usage. Assuming
-`$GOPATH/bin` is in yout `$PATH`, simply `go get` it, and feed it data
-points via stdin:
+``$GOPATH/bin`` is in your ``$PATH``, simply ``go get`` it then install CLI.
+
+CLI Installation
+^^^^^^^^^^^^^^^^
 
 ::
 
- $ go install github.com/guptarohit/asciigraph/cmd/asciigraph
+    go install github.com/guptarohit/asciigraph/cmd/asciigraph
+
+Feed it data points via stdin:
+
+::
+
  $ seq 1 72 | asciigraph -h 10 -c "plot data from stdin"
  72.00 ┼
  65.55 ┤                                                                  ╭────
@@ -99,6 +108,7 @@ points via stdin:
   7.45 ┤  ╭──────╯
   1.00 ┼──╯
           plot data from stdin
+
 ..
 
 
