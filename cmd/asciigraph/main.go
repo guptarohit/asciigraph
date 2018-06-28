@@ -24,7 +24,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "  %s [options]\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "Options:\n")
 		flag.PrintDefaults()
-		fmt.Fprintf(os.Stderr, "%s expects data points from stdin. Invalid values are logged to stderr.", os.Args[0])
+		fmt.Fprintf(os.Stderr, "%s expects data points from stdin. Invalid values are logged to stderr.\n", os.Args[0])
 	}
 	flag.UintVar(&height, "h", height, "`height` in text rows, 0 for auto-scaling")
 	flag.UintVar(&width, "w", width, "`width` in columns, 0 for auto-scaling")
