@@ -33,8 +33,8 @@ func Plot(series []float64, options ...Option) string {
 	}
 
 	ratio := float64(config.Height) / interval
-	min2 := math.Floor(minimum * ratio)
-	max2 := math.Ceil(maximum * ratio)
+	min2 := round(minimum * ratio)
+	max2 := round(maximum * ratio)
 
 	intmin2 := int(min2)
 	intmax2 := int(max2)
@@ -86,7 +86,7 @@ func Plot(series []float64, options ...Option) string {
 		}
 	}
 
-	y0 := int(series[0]*ratio - min2)
+	y0 := int(round(series[0]*ratio) - min2)
 	var y1 int
 
 	plot[rows-y0][config.Offset-1] = "┼" // first value
