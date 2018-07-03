@@ -32,7 +32,12 @@ func Plot(series []float64, options ...Option) string {
 		config.Offset = 3
 	}
 
-	ratio := float64(config.Height) / interval
+	var ratio float64
+	if interval != 0 {
+		ratio = float64(config.Height) / interval
+	} else {
+		ratio = 1
+	}
 	min2 := round(minimum * ratio)
 	max2 := round(maximum * ratio)
 
@@ -74,7 +79,14 @@ func Plot(series []float64, options ...Option) string {
 
 	// axis and labels
 	for y := intmin2; y < intmax2+1; y++ {
-		label := fmt.Sprintf("%*.*f", maxWidth+1, precision, maximum-(float64(y-intmin2)*interval/float64(rows)))
+		var magnitude float64
+		if rows > 0 {
+			magnitude = maximum-(float64(y-intmin2)*interval/float64(rows))
+		} else {
+			magnitude = float64(y)
+		}
+
+		label := fmt.Sprintf("%*.*f", maxWidth+1, precision, magnitude)
 		w := y - intmin2
 		h := int(math.Max(float64(config.Offset)-float64(len(label)), 0))
 

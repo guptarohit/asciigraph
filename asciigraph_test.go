@@ -12,6 +12,10 @@ func TestPlot(t *testing.T) {
 		expected string
 	}{
 		{
+			[]float64{1, 1, 1, 1, 1},
+			nil,
+			` 1.00 ┼──── `},
+		{
 			[]float64{2, 1, 1, 2, -2, 5, 7, 11, 3, 7, 1},
 			nil,
 			` 11.00 ┤      ╭╮   
