@@ -111,12 +111,9 @@ func Plot(series []float64, options ...Option) string {
 		} else {
 			if y0 > y1 {
 				plot[rows-y1][x+config.Offset] = "╰"
-			} else {
-				plot[rows-y1][x+config.Offset] = "╭"
-			}
-			if y0 > y1 {
 				plot[rows-y0][x+config.Offset] = "╮"
 			} else {
+				plot[rows-y1][x+config.Offset] = "╭"
 				plot[rows-y0][x+config.Offset] = "╯"
 			}
 
