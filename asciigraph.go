@@ -9,6 +9,7 @@ import (
 
 // Plot returns ascii graph for a series.
 func Plot(series []float64, options ...Option) string {
+	var logMaximum float64
 	config := configure(config{
 		Offset: 3,
 	}, options)
@@ -59,7 +60,10 @@ func Plot(series []float64, options ...Option) string {
 	}
 
 	precision := 2
-	logMaximum := math.Log10(math.Max(math.Abs(maximum), math.Abs(minimum))) //to find number of zeros after decimal
+	logMaximum = math.Log10(math.Max(math.Abs(maximum), math.Abs(minimum))) //to find number of zeros after decimal
+	if minimum == float64(0) && maximum == float64(0) {
+		logMaximum = float64(-1)
+	}
 
 	if logMaximum < 0 {
 		// negative log
@@ -81,7 +85,7 @@ func Plot(series []float64, options ...Option) string {
 	for y := intmin2; y < intmax2+1; y++ {
 		var magnitude float64
 		if rows > 0 {
-			magnitude = maximum-(float64(y-intmin2)*interval/float64(rows))
+			magnitude = maximum - (float64(y-intmin2) * interval / float64(rows))
 		} else {
 			magnitude = float64(y)
 		}
