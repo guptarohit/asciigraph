@@ -48,6 +48,12 @@ func PlotMany(data [][]float64, options ...Option) string {
 			maximum = max
 		}
 	}
+	if config.LowerBound != nil && *config.LowerBound < minimum {
+		minimum = *config.LowerBound
+	}
+	if config.UpperBound != nil && *config.UpperBound > maximum {
+		maximum = *config.UpperBound
+	}
 	interval := math.Abs(maximum - minimum)
 
 	if config.Height <= 0 {
