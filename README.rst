@@ -23,6 +23,10 @@ asciigraph
     :target: https://github.com/guptarohit/asciigraph/blob/master/LICENSE
     :alt: License
 
+.. image:: https://awesome.re/mentioned-badge-flat.svg
+    :target: https://github.com/avelino/awesome-go#advanced-console-uis
+    :alt: Mentioned in Awesome Go
+
 |
 
 Go package to make lightweight ASCII line graphs ╭┈╯.
