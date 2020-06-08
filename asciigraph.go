@@ -7,35 +7,47 @@ import (
 	"strings"
 )
 
-// Plot returns ascii graph for a series.
-func Plot(series []float64, options ...Option) string {
-	var logMaximum float64
-	config := configure(config{
+type Graph struct {
+	series []float64
+	config *config
+}
+
+func NewGraph(series []float64, options ...Option) *Graph {
+	g := new(Graph)
+	g.series = series
+	g.config = configure(config{
 		Offset: 3,
 	}, options)
 
-	if config.Width > 0 {
-		series = interpolateArray(series, config.Width)
+	return g
+}
+
+// Plot returns ascii graph for a series.
+func (g Graph) Plot() string {
+	var logMaximum float64
+
+	if g.config.Width > 0 {
+		g.series = interpolateArray(g.series, g.config.Width)
 	}
 
-	minimum, maximum := minMaxFloat64Slice(series)
+	minimum, maximum := minMaxFloat64Slice(g.series)
 	interval := math.Abs(maximum - minimum)
 
-	if config.Height <= 0 {
+	if g.config.Height <= 0 {
 		if int(interval) <= 0 {
-			config.Height = int(interval * math.Pow10(int(math.Ceil(-math.Log10(interval)))))
+			g.config.Height = int(interval * math.Pow10(int(math.Ceil(-math.Log10(interval)))))
 		} else {
-			config.Height = int(interval)
+			g.config.Height = int(interval)
 		}
 	}
 
-	if config.Offset <= 0 {
-		config.Offset = 3
+	if g.config.Offset <= 0 {
+		g.config.Offset = 3
 	}
 
 	var ratio float64
 	if interval != 0 {
-		ratio = float64(config.Height) / interval
+		ratio = float64(g.config.Height) / interval
 	} else {
 		ratio = 1
 	}
@@ -46,7 +58,7 @@ func Plot(series []float64, options ...Option) string {
 	intmax2 := int(max2)
 
 	rows := int(math.Abs(float64(intmax2 - intmin2)))
-	width := len(series) + config.Offset
+	width := len(g.series) + g.config.Offset
 
 	var plot [][]string
 
@@ -92,39 +104,39 @@ func Plot(series []float64, options ...Option) string {
 
 		label := fmt.Sprintf("%*.*f", maxWidth+1, precision, magnitude)
 		w := y - intmin2
-		h := int(math.Max(float64(config.Offset)-float64(len(label)), 0))
+		h := int(math.Max(float64(g.config.Offset)-float64(len(label)), 0))
 
 		plot[w][h] = label
 		if y == 0 {
-			plot[w][config.Offset-1] = "┼"
+			plot[w][g.config.Offset-1] = "┼"
 		} else {
-			plot[w][config.Offset-1] = "┤"
+			plot[w][g.config.Offset-1] = "┤"
 		}
 	}
 
-	y0 := int(round(series[0]*ratio) - min2)
+	y0 := int(round(g.series[0]*ratio) - min2)
 	var y1 int
 
-	plot[rows-y0][config.Offset-1] = "┼" // first value
+	plot[rows-y0][g.config.Offset-1] = "┼" // first value
 
-	for x := 0; x < len(series)-1; x++ { // plot the line
-		y0 = int(round(series[x+0]*ratio) - float64(intmin2))
-		y1 = int(round(series[x+1]*ratio) - float64(intmin2))
+	for x := 0; x < len(g.series)-1; x++ { // plot the line
+		y0 = int(round(g.series[x+0]*ratio) - float64(intmin2))
+		y1 = int(round(g.series[x+1]*ratio) - float64(intmin2))
 		if y0 == y1 {
-			plot[rows-y0][x+config.Offset] = "─"
+			plot[rows-y0][x+g.config.Offset] = "─"
 		} else {
 			if y0 > y1 {
-				plot[rows-y1][x+config.Offset] = "╰"
-				plot[rows-y0][x+config.Offset] = "╮"
+				plot[rows-y1][x+g.config.Offset] = "╰"
+				plot[rows-y0][x+g.config.Offset] = "╮"
 			} else {
-				plot[rows-y1][x+config.Offset] = "╭"
-				plot[rows-y0][x+config.Offset] = "╯"
+				plot[rows-y1][x+g.config.Offset] = "╭"
+				plot[rows-y0][x+g.config.Offset] = "╯"
 			}
 
 			start := int(math.Min(float64(y0), float64(y1))) + 1
 			end := int(math.Max(float64(y0), float64(y1)))
 			for y := start; y < end; y++ {
-				plot[rows-y][x+config.Offset] = "│"
+				plot[rows-y][x+g.config.Offset] = "│"
 			}
 		}
 	}
@@ -141,11 +153,16 @@ func Plot(series []float64, options ...Option) string {
 	}
 
 	// add caption if not empty
-	if config.Caption != "" {
+	if g.config.Caption != "" {
 		lines.WriteRune('\n')
-		lines.WriteString(strings.Repeat(" ", config.Offset+maxWidth+2))
-		lines.WriteString(config.Caption)
+		lines.WriteString(strings.Repeat(" ", g.config.Offset+maxWidth+2))
+		lines.WriteString(g.config.Caption)
 	}
-
 	return lines.String()
+}
+
+// Plot returns ascii graph for a series.
+func Plot(series []float64, options ...Option) string {
+	g := NewGraph(series, options...)
+	return g.Plot()
 }
