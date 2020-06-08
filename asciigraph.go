@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// Graph struct
 type Graph struct {
 	series []float64
 	config *config
@@ -24,6 +25,7 @@ type Graph struct {
 	precision int
 }
 
+// NewGraph - Graph Constructor
 func NewGraph(series []float64, options ...Option) *Graph {
 	g := new(Graph)
 
@@ -32,6 +34,11 @@ func NewGraph(series []float64, options ...Option) *Graph {
 		Offset: 3,
 	}, options)
 
+	return g
+}
+
+// PreProcess - function for evaluating parameters for graph
+func (g *Graph) PreProcess() {
 	var logMaximum float64
 
 	if g.config.Width > 0 {
@@ -96,11 +103,11 @@ func NewGraph(series []float64, options ...Option) *Graph {
 	maxNumLength := int(len(fmt.Sprintf("%0.*f", g.precision, g.maximum)))
 	minNumLength := int(len(fmt.Sprintf("%0.*f", g.precision, g.minimum)))
 	g.maxWidth = int(math.Max(float64(maxNumLength), float64(minNumLength)))
-
-	return g
 }
 
+// Plot - returns string data representing graph
 func (g *Graph) Plot() string {
+	g.PreProcess()
 
 	// axis and labels
 	for y := g.intmin2; y < g.intmax2+1; y++ {
@@ -167,9 +174,6 @@ func (g *Graph) Plot() string {
 		lines.WriteString(strings.Repeat(" ", g.config.Offset+g.maxWidth+2))
 		lines.WriteString(g.config.Caption)
 	}
-	fmt.Printf("\n")
-	fmt.Printf(lines.String())
-	fmt.Printf("\n")
 	return lines.String()
 }
 
