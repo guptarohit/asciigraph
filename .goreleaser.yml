@@ -1,0 +1,49 @@
+# Build customization
+builds:
+  - env:
+      - CGO_ENABLED=0
+    main: ./cmd/asciigraph/main.go
+    ldflags: '-s -w'
+    # GOOS list to build in.
+    # For more info refer to https://golang.org/doc/install/source#environment
+    goos:
+      - linux
+      - darwin
+      - windows
+    # GOARCH to build in.
+    # For more info refer to https://golang.org/doc/install/source#environment
+    goarch:
+      - 386
+      - amd64
+      - arm
+      - arm64
+checksum:
+  name_template: '{{ .ProjectName }}_{{ .Version }}_sha512-checksums.txt'
+  algorithm: sha512
+# Archive customization
+archives:
+  - id: tar
+    format: tar.gz
+    files:
+      - LICENSE
+      - README.rst
+    # Replacements for GOOS and GOARCH on the archive name.
+    replacements:
+      '386': i386
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      amd64: x86_64
+    format_overrides:
+      - goos: windows
+        format: zip
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+release:
+  github:
+    owner: guptarohit
+    name: asciigraph
