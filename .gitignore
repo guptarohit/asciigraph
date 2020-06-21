@@ -13,3 +13,6 @@
 
 # ide
 .idea
+
+# build dirs
+*dist*
