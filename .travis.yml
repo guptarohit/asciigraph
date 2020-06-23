@@ -10,10 +10,17 @@ go:
 install:
   - go get github.com/mattn/goveralls
   - go get golang.org/x/tools/cmd/cover
-  
+
 script:
   - go test -v -race ./.
   - goveralls -service=travis-ci
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: curl -sL https://git.io/goreleaser | bash
+    on:
+      tags: true
 
 notifications:
   email: false
