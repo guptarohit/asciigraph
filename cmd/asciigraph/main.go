@@ -33,8 +33,8 @@ func main() {
 	flag.UintVar(&width, "w", width, "`width` in columns, 0 for auto-scaling")
 	flag.UintVar(&offset, "o", offset, "`offset` in columns, for the label")
 	flag.StringVar(&caption, "c", caption, "`caption` for the graph")
-	flag.BoolVar(&enableRealTime, "r", enableRealTime, "enables realtime graph for data stream")
-	flag.IntVar(&realTimeDataBuffer, "b", realTimeDataBuffer, "data points buffer when realtime graph enabled, default equal to `width`")
+	flag.BoolVar(&enableRealTime, "r", enableRealTime, "enables `realtime` graph for data stream")
+	flag.IntVar(&realTimeDataBuffer, "b", realTimeDataBuffer, "data points `buffer` when realtime graph enabled, default equal to `width`")
 	flag.Parse()
 
 	data := make([]float64, 0, 64)
