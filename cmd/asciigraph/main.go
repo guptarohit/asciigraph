@@ -68,19 +68,21 @@ func main() {
 			fmt.Println(plot)
 		}
 	}
-	if err := s.Err(); err != nil {
-		log.Fatal(err)
+	if !enableRealTime {
+		if err := s.Err(); err != nil {
+			log.Fatal(err)
+		}
+
+		if len(data) == 0 {
+			log.Fatal("no data")
+		}
+
+		plot := asciigraph.Plot(data,
+			asciigraph.Height(int(height)),
+			asciigraph.Width(int(width)),
+			asciigraph.Offset(int(offset)),
+			asciigraph.Caption(caption))
+
+		fmt.Println(plot)
 	}
-
-	if len(data) == 0 {
-		log.Fatal("no data")
-	}
-
-	plot := asciigraph.Plot(data,
-		asciigraph.Height(int(height)),
-		asciigraph.Width(int(width)),
-		asciigraph.Offset(int(offset)),
-		asciigraph.Caption(caption))
-
-	fmt.Println(plot)
 }
