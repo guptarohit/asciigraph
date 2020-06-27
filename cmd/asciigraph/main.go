@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"strconv"
 
 	"github.com/guptarohit/asciigraph"
@@ -62,9 +61,7 @@ func main() {
 				asciigraph.Width(int(width)),
 				asciigraph.Offset(int(offset)),
 				asciigraph.Caption(caption))
-			c := exec.Command("clear")
-			c.Stdout = os.Stdout
-			c.Run()
+			asciigraph.Clear()
 			fmt.Println(plot)
 		}
 	}
