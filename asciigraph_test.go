@@ -193,6 +193,21 @@ func TestPlot(t *testing.T) {
 		name := fmt.Sprintf("%d", i)
 		t.Run(name, func(t *testing.T) {
 			c := cases[i]
+			g := NewGraph(c.data, c.opts...)
+			actual := g.Plot()
+			if actual != c.expected {
+				conf := configure(config{}, c.opts)
+				t.Errorf("Plot(%f, %#v)", c.data, conf)
+				t.Logf("expected:\n%s\n", c.expected)
+			}
+			t.Logf("actual:\n%s\n", actual)
+		})
+	}
+
+	for i := range cases {
+		name := fmt.Sprintf("%d", i)
+		t.Run(name, func(t *testing.T) {
+			c := cases[i]
 			actual := Plot(c.data, c.opts...)
 			if actual != c.expected {
 				conf := configure(config{}, c.opts)
