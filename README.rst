@@ -94,6 +94,8 @@ CLI Installation
 
     go install github.com/guptarohit/asciigraph/cmd/asciigraph
 
+or download binaries from the `releases <https://github.com/guptarohit/asciigraph/releases>`_ page.
+
 Feed it data points via stdin:
 
 ::
@@ -138,7 +140,7 @@ Realtime graph for data points via stdin:
 
 Acknowledgement
 ----------------
-This package is golang port of library `asciichart <https://github.com/kroitor/asciichart>`_ written by `@kroitor <https://github.com/kroitor>`_.
+This package started as golang port of `asciichart <https://github.com/kroitor/asciichart>`_.
 
 Contributing
 ------------
