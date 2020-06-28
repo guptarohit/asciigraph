@@ -17,6 +17,9 @@ builds:
       - amd64
       - arm
       - arm64
+    ignore:
+      - goos: darwin
+        goarch: 386
 checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_sha512-checksums.txt'
   algorithm: sha512
