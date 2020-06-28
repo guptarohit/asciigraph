@@ -12,10 +12,12 @@ import (
 )
 
 var (
-	height  uint
-	width   uint
-	offset  uint = 3
-	caption string
+	height             uint
+	width              uint
+	offset             uint = 3
+	caption            string
+	enableRealTime     bool
+	realTimeDataBuffer int
 )
 
 func main() {
@@ -30,9 +32,15 @@ func main() {
 	flag.UintVar(&width, "w", width, "`width` in columns, 0 for auto-scaling")
 	flag.UintVar(&offset, "o", offset, "`offset` in columns, for the label")
 	flag.StringVar(&caption, "c", caption, "`caption` for the graph")
+	flag.BoolVar(&enableRealTime, "r", enableRealTime, "enables `realtime` graph for data stream")
+	flag.IntVar(&realTimeDataBuffer, "b", realTimeDataBuffer, "data points `buffer` when realtime graph enabled, default equal to `width`")
 	flag.Parse()
 
 	data := make([]float64, 0, 64)
+
+	if realTimeDataBuffer == 0 {
+		realTimeDataBuffer = int(width)
+	}
 
 	s := bufio.NewScanner(os.Stdin)
 	s.Split(bufio.ScanWords)
@@ -44,20 +52,34 @@ func main() {
 			continue
 		}
 		data = append(data, p)
+		if enableRealTime {
+			if realTimeDataBuffer > 0 && len(data) > realTimeDataBuffer {
+				data = data[len(data)-realTimeDataBuffer:]
+			}
+			plot := asciigraph.Plot(data,
+				asciigraph.Height(int(height)),
+				asciigraph.Width(int(width)),
+				asciigraph.Offset(int(offset)),
+				asciigraph.Caption(caption))
+			asciigraph.Clear()
+			fmt.Println(plot)
+		}
 	}
-	if err := s.Err(); err != nil {
-		log.Fatal(err)
+	if !enableRealTime {
+		if err := s.Err(); err != nil {
+			log.Fatal(err)
+		}
+
+		if len(data) == 0 {
+			log.Fatal("no data")
+		}
+
+		plot := asciigraph.Plot(data,
+			asciigraph.Height(int(height)),
+			asciigraph.Width(int(width)),
+			asciigraph.Offset(int(offset)),
+			asciigraph.Caption(caption))
+
+		fmt.Println(plot)
 	}
-
-	if len(data) == 0 {
-		log.Fatal("no data")
-	}
-
-	plot := asciigraph.Plot(data,
-		asciigraph.Height(int(height)),
-		asciigraph.Width(int(width)),
-		asciigraph.Offset(int(offset)),
-		asciigraph.Caption(caption))
-
-	fmt.Println(plot)
 }
