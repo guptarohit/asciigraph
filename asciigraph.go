@@ -19,6 +19,13 @@ func Plot(series []float64, options ...Option) string {
 	}
 
 	minimum, maximum := minMaxFloat64Slice(series)
+	if config.Min != nil && *config.Min < minimum {
+		minimum = *config.Min
+	}
+	if config.Max != nil && *config.Max > maximum {
+		maximum = *config.Max
+	}
+
 	interval := math.Abs(maximum - minimum)
 
 	if config.Height <= 0 {
