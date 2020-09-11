@@ -48,15 +48,15 @@ func Plot(series []float64, options ...Option) string {
 	rows := int(math.Abs(float64(intmax2 - intmin2)))
 	width := len(series) + config.Offset
 
-	var plot [][]string
+	plot := make([][]string, rows+1)
 
 	// initialise empty 2D grid
 	for i := 0; i < rows+1; i++ {
-		var line []string
+		line := make([]string, width)
 		for j := 0; j < width; j++ {
-			line = append(line, " ")
+			line[j] = " "
 		}
-		plot = append(plot, line)
+		plot[i] = line
 	}
 
 	precision := 2
