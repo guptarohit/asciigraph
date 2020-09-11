@@ -69,9 +69,9 @@ func Plot(series []float64, options ...Option) string {
 		// negative log
 		if math.Mod(logMaximum, 1) != 0 {
 			// non-zero digits after decimal
-			precision = precision + int(math.Abs(logMaximum))
+			precision += int(math.Abs(logMaximum))
 		} else {
-			precision = precision + int(math.Abs(logMaximum)-1.0)
+			precision += int(math.Abs(logMaximum) - 1.0)
 		}
 	} else if logMaximum > 2 {
 		precision = 0
