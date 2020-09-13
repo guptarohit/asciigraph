@@ -156,7 +156,17 @@ func Plot(series []float64, options ...Option) string {
 		if h != 0 {
 			lines.WriteRune('\n')
 		}
-		for _, v := range horizontal {
+
+		// remove trailing spaces
+		lastCharIndex := 0
+		for i := width - 1; i >= 0; i-- {
+			if horizontal[i] != " " {
+				lastCharIndex = i
+				break
+			}
+		}
+
+		for _, v := range horizontal[:lastCharIndex+1] {
 			lines.WriteString(v)
 		}
 	}
