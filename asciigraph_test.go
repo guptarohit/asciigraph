@@ -2,6 +2,7 @@ package asciigraph
 
 import (
 	"fmt"
+	"math"
 	"testing"
 )
 
@@ -187,6 +188,31 @@ func TestPlot(t *testing.T) {
  38.46 ┤                                                     ││ │││ 
  37.46 ┤                                                     ╰╯ │││ 
  36.45 ┤                                                        ╰╯╰ `},
+		{
+			[]float64{1, 1, math.NaN(), 1, 1},
+			nil,
+			` 1.00 ┼─╴╶─ `},
+		{
+			[]float64{0, 0, 1, 1, math.NaN(), math.NaN(), 3, 3, 4},
+			nil,
+			` 4.00 ┼       ╭ 
+ 3.00 ┤     ╶─╯ 
+ 2.00 ┤         
+ 1.00 ┤ ╭─╴     
+ 0.00 ┼─╯       `},
+		{
+			[]float64{.1, .2, .3, math.NaN(), .5, .6, .7, math.NaN(), math.NaN(), .9, 1},
+			nil,
+			` 1.00 ┤         ╭ 
+ 0.90 ┤        ╶╯ 
+ 0.80 ┤           
+ 0.70 ┤     ╭╴    
+ 0.60 ┤    ╭╯     
+ 0.50 ┤   ╶╯      
+ 0.40 ┤           
+ 0.30 ┤ ╭╴        
+ 0.20 ┤╭╯         
+ 0.10 ┼╯          `},
 	}
 
 	for i := range cases {
