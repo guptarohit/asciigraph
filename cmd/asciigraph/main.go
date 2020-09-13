@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/guptarohit/asciigraph"
 )
@@ -18,6 +19,7 @@ var (
 	caption            string
 	enableRealTime     bool
 	realTimeDataBuffer int
+	fps                float64 = 24
 )
 
 func main() {
@@ -34,6 +36,7 @@ func main() {
 	flag.StringVar(&caption, "c", caption, "`caption` for the graph")
 	flag.BoolVar(&enableRealTime, "r", enableRealTime, "enables `realtime` graph for data stream")
 	flag.IntVar(&realTimeDataBuffer, "b", realTimeDataBuffer, "data points `buffer` when realtime graph enabled, default equal to `width`")
+	flag.Float64Var(&fps, "f", fps, "set `fps` to control how frequently graph to be rendered when realtime graph enabled")
 	flag.Parse()
 
 	data := make([]float64, 0, 64)
@@ -44,6 +47,11 @@ func main() {
 
 	s := bufio.NewScanner(os.Stdin)
 	s.Split(bufio.ScanWords)
+
+	nextFlushTime := time.Now()
+
+	flushInterval := time.Duration(float64(time.Second) / fps)
+
 	for s.Scan() {
 		word := s.Text()
 		p, err := strconv.ParseFloat(word, 64)
@@ -56,13 +64,17 @@ func main() {
 			if realTimeDataBuffer > 0 && len(data) > realTimeDataBuffer {
 				data = data[len(data)-realTimeDataBuffer:]
 			}
-			plot := asciigraph.Plot(data,
-				asciigraph.Height(int(height)),
-				asciigraph.Width(int(width)),
-				asciigraph.Offset(int(offset)),
-				asciigraph.Caption(caption))
-			asciigraph.Clear()
-			fmt.Println(plot)
+
+			if currentTime := time.Now(); currentTime.After(nextFlushTime) || currentTime.Equal(nextFlushTime) {
+				plot := asciigraph.Plot(data,
+					asciigraph.Height(int(height)),
+					asciigraph.Width(int(width)),
+					asciigraph.Offset(int(offset)),
+					asciigraph.Caption(caption))
+				asciigraph.Clear()
+				fmt.Println(plot)
+				nextFlushTime = time.Now().Add(flushInterval)
+			}
 		}
 	}
 	if !enableRealTime {
