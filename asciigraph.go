@@ -143,7 +143,10 @@ func Plot(series []float64, options ...Option) string {
 	// add caption if not empty
 	if config.Caption != "" {
 		lines.WriteRune('\n')
-		lines.WriteString(strings.Repeat(" ", config.Offset+maxWidth+2))
+		lines.WriteString(strings.Repeat(" ", config.Offset+maxWidth))
+		if len(config.Caption) < len(series) {
+			lines.WriteString(strings.Repeat(" ", (len(series)-len(config.Caption))/2))
+		}
 		lines.WriteString(config.Caption)
 	}
 

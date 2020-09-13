@@ -53,14 +53,14 @@ func TestPlot(t *testing.T) {
   0.00 ┤   ││         ╰╯      
  -1.00 ┤   ││                 
  -2.00 ┤   ╰╯                 
-          Plot using asciigraph.`},
+        Plot using asciigraph.`},
 		{
 			[]float64{.2, .1, .2, 2, -.9, .7, .91, .3, .7, .4, .5},
 			[]Option{Caption("Plot using asciigraph.")},
 			`  2.00 ┤  ╭╮ ╭╮    
   0.55 ┼──╯│╭╯╰─── 
  -0.90 ┤   ╰╯      
-          Plot using asciigraph.`},
+        Plot using asciigraph.`},
 		{
 			[]float64{2, 1, 1, 2, -2, 5, 7, 11, 3, 7, 1},
 			[]Option{Height(4), Offset(3)},
@@ -117,7 +117,7 @@ func TestPlot(t *testing.T) {
  0.23 ┤ ╰╮ ╭╯   ╰╮│    ╰╮╭╯   ╰╮ ╭╯  
  0.20 ┤  ╰╮│     ╰╯     ╰╯     │╭╯   
  0.16 ┤   ╰╯                   ╰╯    
-         Plot with custom height & width.`},
+       Plot with custom height & width.`},
 		{
 			[]float64{
 				0, 0, 0, 0, 1.5, 0, 0, -0.5, 9, -3, 0, 0, 1, 2, 1, 0, 0, 0, 0,
@@ -136,7 +136,7 @@ func TestPlot(t *testing.T) {
      -0.40    ┼───╯╰──╯│╭─╯  ╰───────╯╰──╯│╭─╯  ╰───────╯╰──╯│╭─╯  ╰─── 
      -1.70    ┤        ││                 ││                 ││         
      -3.00    ┤        ╰╯                 ╰╯                 ╰╯         
-                 I'm a doctor, not an engineer.`},
+                            I'm a doctor, not an engineer.`},
 		{
 			[]float64{-5, -2, -3, -4, 0, -5, -6, -7, -8, 0, -9, -3, -5, -2, -9, -3, -1},
 			nil,
