@@ -79,19 +79,8 @@ $ seq 1 72 | asciigraph -h 10 -c "plot data from stdin"
 Realtime graph for data points via stdin:
 ``` bash
 $ ping -i.2 google.com | grep -oP '(?<=time=).*(?=ms)' --line-buffered | asciigraph -r -h 10 -w 40 -c "realtime plot data (google ping in ms) from stdin"
-  8.26 ┤                 ╭╮
-  7.77 ┤                 ││
-  7.27 ┤                 ││
-  6.78 ┤                 ││             ╭╮
-  6.29 ┤    ╭╮ ╭╮        ││             ││
-  5.79 ┤    ││ ││        ││             │╰╮
-  5.30 ┤    ││ ││      ╭╮││             │ │   ╭
-  4.81 ┤    ││ ││      ││││             │ │   │
-  4.32 ┤ ╭╮ ││╭╯│   ╭╮ ││││             │ │  ╭╯
-  3.82 ┼╮│╰─╯╰╯ │╭──╯╰─╯╰╯╰──╮ ╭───╮╭───╯ ╰──╯
-  3.33 ┤╰╯      ╰╯           ╰─╯   ╰╯
-         realtime plot data (google ping in ms) from stdin
 ```
+[![asciinema][]][7]
 
 
 ## Acknowledgement
@@ -119,3 +108,5 @@ Feel free to make a pull request! :octocat:
 [image]: https://user-images.githubusercontent.com/7895001/41509956-b1b2b3d0-7279-11e8-9d19-d7dea17d5e44.png
 [releases]: https://github.com/guptarohit/asciigraph/releases
 [asciichart]: https://github.com/kroitor/asciichart
+[asciinema]: https://asciinema.org/a/382383.svg
+[7]: https://asciinema.org/a/382383
