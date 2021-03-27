@@ -29,7 +29,7 @@ archives:
     format: tar.gz
     files:
       - LICENSE
-      - README.rst
+      - README.md
     # Replacements for GOOS and GOARCH on the archive name.
     replacements:
       '386': i386
