@@ -14,7 +14,7 @@ type config struct {
 	Width, Height int
 	Offset        int
 	Caption       string
-	Precision     int
+	Precision     uint
 }
 
 // An optionFunc applies an option.
@@ -61,7 +61,7 @@ func Offset(o int) Option {
 }
 
 // Precision sets the graphs precision.
-func Precision(p int) Option {
+func Precision(p uint) Option {
 	return optionFunc(func(c *config) { c.Precision = p })
 }
 

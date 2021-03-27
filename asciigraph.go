@@ -11,7 +11,8 @@ import (
 func Plot(series []float64, options ...Option) string {
 	var logMaximum float64
 	config := configure(config{
-		Offset: 3,
+		Offset:    3,
+		Precision: 2,
 	}, options)
 
 	if config.Width > 0 {
@@ -59,10 +60,7 @@ func Plot(series []float64, options ...Option) string {
 		plot[i] = line
 	}
 
-	precision := 2
-	if config.Precision != 0 {
-		precision = config.Precision
-	}
+	precision := config.Precision
 	logMaximum = math.Log10(math.Max(math.Abs(maximum), math.Abs(minimum))) //to find number of zeros after decimal
 	if minimum == float64(0) && maximum == float64(0) {
 		logMaximum = float64(-1)
@@ -72,9 +70,9 @@ func Plot(series []float64, options ...Option) string {
 		// negative log
 		if math.Mod(logMaximum, 1) != 0 {
 			// non-zero digits after decimal
-			precision += int(math.Abs(logMaximum))
+			precision += uint(math.Abs(logMaximum))
 		} else {
-			precision += int(math.Abs(logMaximum) - 1.0)
+			precision += uint(math.Abs(logMaximum) - 1.0)
 		}
 	} else if logMaximum > 2 {
 		precision = 0
