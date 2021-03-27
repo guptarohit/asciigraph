@@ -16,6 +16,7 @@ var (
 	height             uint
 	width              uint
 	offset             uint = 3
+	precision          uint = 2
 	caption            string
 	enableRealTime     bool
 	realTimeDataBuffer int
@@ -33,6 +34,7 @@ func main() {
 	flag.UintVar(&height, "h", height, "`height` in text rows, 0 for auto-scaling")
 	flag.UintVar(&width, "w", width, "`width` in columns, 0 for auto-scaling")
 	flag.UintVar(&offset, "o", offset, "`offset` in columns, for the label")
+	flag.UintVar(&precision, "p", precision, "`precision` of data point labels along the y-axis")
 	flag.StringVar(&caption, "c", caption, "`caption` for the graph")
 	flag.BoolVar(&enableRealTime, "r", enableRealTime, "enables `realtime` graph for data stream")
 	flag.IntVar(&realTimeDataBuffer, "b", realTimeDataBuffer, "data points `buffer` when realtime graph enabled, default equal to `width`")
@@ -70,6 +72,7 @@ func main() {
 					asciigraph.Height(int(height)),
 					asciigraph.Width(int(width)),
 					asciigraph.Offset(int(offset)),
+					asciigraph.Precision(precision),
 					asciigraph.Caption(caption))
 				asciigraph.Clear()
 				fmt.Println(plot)
@@ -90,6 +93,7 @@ func main() {
 			asciigraph.Height(int(height)),
 			asciigraph.Width(int(width)),
 			asciigraph.Offset(int(offset)),
+			asciigraph.Precision(precision),
 			asciigraph.Caption(caption))
 
 		fmt.Println(plot)
