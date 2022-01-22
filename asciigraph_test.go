@@ -193,6 +193,10 @@ func TestPlot(t *testing.T) {
 			nil,
 			` 1.00 ┼─╴╶─`},
 		{
+			[]float64{math.NaN(), 1},
+			nil,
+			` 1.00 ┤╶`},
+		{
 			[]float64{0, 0, 1, 1, math.NaN(), math.NaN(), 3, 3, 4},
 			nil,
 			` 4.00 ┼       ╭
