@@ -93,8 +93,8 @@ This package started as golang port of [asciichart][].
 Feel free to make a pull request! :octocat:
 
 
-[Build status]: https://travis-ci.org/guptarohit/asciigraph.svg?branch=master
-[1]: https://travis-ci.org/guptarohit/asciigraph
+[Build status]: https://github.com/guptarohit/asciigraph/actions/workflows/test.yml/badge.svg
+[1]: https://github.com/guptarohit/asciigraph/actions/workflows/test.yml
 [Go Report Card]: https://goreportcard.com/badge/github.com/guptarohit/asciigraph
 [2]: https://goreportcard.com/report/github.com/guptarohit/asciigraph
 [Coverage Status]: https://coveralls.io/repos/github/guptarohit/asciigraph/badge.svg?branch=master
