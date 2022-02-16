@@ -2,6 +2,7 @@ package asciigraph
 
 import (
 	"fmt"
+	"log"
 	"math"
 	"os"
 	"os/exec"
@@ -78,7 +79,9 @@ func init() {
 		Clear = func() {
 			cmd := exec.Command("cmd", "/c", "cls")
 			cmd.Stdout = os.Stdout
-			cmd.Run()
+			if err := cmd.Run(); err != nil {
+				log.Fatal(err)
+			}
 		}
 	} else {
 		Clear = func() {
