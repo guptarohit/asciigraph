@@ -96,11 +96,7 @@ func Plot(series []float64, options ...Option) string {
 		h := int(math.Max(float64(config.Offset)-float64(len(label)), 0))
 
 		plot[w][h] = label
-		if y == 0 {
-			plot[w][config.Offset-1] = "┼"
-		} else {
-			plot[w][config.Offset-1] = "┤"
-		}
+		plot[w][config.Offset-1] = "┤"
 	}
 
 	var y0, y1 int
