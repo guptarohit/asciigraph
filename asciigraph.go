@@ -103,10 +103,12 @@ func Plot(series []float64, options ...Option) string {
 		}
 	}
 
-	y0 := int(round(series[0]*ratio) - min2)
-	var y1 int
+	var y0, y1 int
 
-	plot[rows-y0][config.Offset-1] = "┼" // first value
+	if !math.IsNaN(series[0]) {
+		y0 = int(round(series[0]*ratio) - min2)
+		plot[rows-y0][config.Offset-1] = "┼" // first value
+	}
 
 	for x := 0; x < len(series)-1; x++ { // plot the line
 
