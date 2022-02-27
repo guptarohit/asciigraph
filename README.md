@@ -48,37 +48,77 @@ Running this example would render the following graph:
 ## Command line interface
 
 This package also brings a small utility for command line usage.
-Assuming `$GOPATH/bin` is in your `$PATH`, simply `go get` it then
-install CLI.
+``` bash                                                                                                                ✘ 0|125  16:19:23
+> asciigraph --help
+Usage of asciigraph:
+  asciigraph [options]
+Options:
+  -b buffer
+    	data points buffer when realtime graph enabled, default equal to `width`
+  -c caption
+    	caption for the graph
+  -f fps
+    	set fps to control how frequently graph to be rendered when realtime graph enabled (default 24)
+  -h height
+    	height in text rows, 0 for auto-scaling
+  -o offset
+    	offset in columns, for the label (default 3)
+  -p precision
+    	precision of data point labels along the y-axis (default 2)
+  -r realtime
+    	enables realtime graph for data stream
+  -w width
+    	width in columns, 0 for auto-scaling
+asciigraph expects data points from stdin. Invalid values are logged to stderr.
+```
 
 ### CLI Installation
+Assuming `$GOPATH/bin` is in your `$PATH`, simply `go get` it then
+install CLI with following command:
 ``` bash
 go install github.com/guptarohit/asciigraph/cmd/asciigraph
 ```
 
+or pull Docker image:
+``` bash
+docker pull ghcr.io/guptarohit/asciigraph:latest
+```
+
 or download binaries from the [releases][] page.
+
+
+### CLI Usage
 
 Feed it data points via stdin:
 ``` bash
-$ seq 1 72 | asciigraph -h 10 -c "plot data from stdin"
-  72.00 ┼
-  65.55 ┤                                                                  ╭────
-  59.09 ┤                                                           ╭──────╯
-  52.64 ┤                                                    ╭──────╯
-  46.18 ┤                                             ╭──────╯
-  39.73 ┤                                      ╭──────╯
-  33.27 ┤                              ╭───────╯
-  26.82 ┤                       ╭──────╯
-  20.36 ┤                ╭──────╯
-  13.91 ┤         ╭──────╯
-   7.45 ┤  ╭──────╯
-   1.00 ┼──╯
-           plot data from stdin
+seq 1 72 | asciigraph -h 10 -c "plot data from stdin"
 ```
 
-Realtime graph for data points via stdin:
+or use Docker image:
 ``` bash
-$ ping -i.2 google.com | grep -oP '(?<=time=).*(?=ms)' --line-buffered | asciigraph -r -h 10 -w 40 -c "realtime plot data (google ping in ms) from stdin"
+seq 1 72 | docker run -i --rm ghcr.io/guptarohit/asciigraph -h 10 -c "plot data from stdin"
+```
+
+Output:
+
+``` bash
+ 72.00 ┤                                                                  ╭────
+ 64.90 ┤                                                           ╭──────╯
+ 57.80 ┤                                                    ╭──────╯
+ 50.70 ┤                                             ╭──────╯
+ 43.60 ┤                                      ╭──────╯
+ 36.50 ┤                              ╭───────╯
+ 29.40 ┤                       ╭──────╯
+ 22.30 ┤                ╭──────╯
+ 15.20 ┤         ╭──────╯
+  8.10 ┤  ╭──────╯
+  1.00 ┼──╯
+                                  plot data from stdin
+```
+
+Example of real-time graph for data points stream via stdin:
+``` bash
+ping -i.2 google.com | grep -oP '(?<=time=).*(?=ms)' --line-buffered | asciigraph -r -h 10 -w 40 -c "realtime plot data (google ping in ms) from stdin"
 ```
 [![asciinema][]][7]
 
