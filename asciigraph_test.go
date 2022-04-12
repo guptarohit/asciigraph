@@ -259,3 +259,58 @@ func TestPlot(t *testing.T) {
 		})
 	}
 }
+
+func TestPlotMany(t *testing.T) {
+	cases := []struct {
+		data     [][]float64
+		opts     []Option
+		expected string
+	}{
+		{
+			[][]float64{{0}, {1}, {2}},
+			nil,
+			`
+ 2.00 ┼
+ 1.00 ┼
+ 0.00 ┼`},
+		{
+			[][]float64{{0, 0, 2, 2, math.NaN()}, {1, 1, 1, 1, 1, 1, 1}, {math.NaN(), math.NaN(), math.NaN(), 0, 0, 2, 2}},
+			nil,
+			`
+ 2.00 ┤ ╭─╴╭─
+ 1.00 ┼────│─
+ 0.00 ┼─╯╶─╯`},
+		{
+			[][]float64{{0, 0, 0}, {math.NaN(), 0, 0}, {math.NaN(), math.NaN(), 0}},
+			nil,
+			` 0.00 ┼╶╶`},
+		{
+			[][]float64{{0, 1, 0}, {2, 3, 4, 3, 2}, {4, 5, 6, 7, 6, 5, 4}},
+			[]Option{Width(21), Caption("interpolation test")},
+			`
+ 7.00 ┤        ╭──╮
+ 6.00 ┤    ╭───╯  ╰───╮
+ 5.00 ┤ ╭──╯          ╰──╮
+ 4.00 ┼─╯  ╭───╮         ╰─
+ 3.00 ┤ ╭──╯   ╰──╮
+ 2.00 ┼─╯         ╰─╴
+ 1.00 ┤ ╭───╮
+ 0.00 ┼─╯   ╰╴
+        interpolation test`},
+	}
+
+	for i := range cases {
+		name := fmt.Sprintf("%d", i)
+		t.Run(name, func(t *testing.T) {
+			c := cases[i]
+			expected := strings.TrimPrefix(c.expected, "\n")
+			actual := PlotMany(c.data, c.opts...)
+			if actual != expected {
+				conf := configure(config{}, c.opts)
+				t.Errorf("Plot(%f, %#v)", c.data, conf)
+				t.Logf("expected:\n%s\n", expected)
+			}
+			t.Logf("actual:\n%s\n", actual)
+		})
+	}
+}
