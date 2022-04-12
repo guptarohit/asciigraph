@@ -20,7 +20,14 @@ func main() {
 			data[i] = append(data[i], v)
 		}
 	}
-	graph := asciigraph.PlotMany(data, asciigraph.Precision(0))
+	graph := asciigraph.PlotMany(data, asciigraph.Precision(0), asciigraph.SeriesColors(
+		asciigraph.Red,
+		asciigraph.Orange,
+		asciigraph.Yellow,
+		asciigraph.Green,
+		asciigraph.Blue,
+		asciigraph.Purple,
+	))
 
 	fmt.Println(graph)
 	// Output:
