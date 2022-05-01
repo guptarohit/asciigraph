@@ -53,3 +53,17 @@ release:
   # If set to true, will not auto-publish the release.
   # Default is false.
   draft: true
+dockers:
+  - image_templates:
+      - 'ghcr.io/guptarohit/asciigraph:{{ .Version }}'
+    dockerfile: Dockerfile
+    build_flag_templates:
+      - '--label=org.opencontainers.image.title={{ .ProjectName }}'
+      - '--label=org.opencontainers.image.name={{ .ProjectName }}'
+      - '--label=org.opencontainers.image.description=Go package to make lightweight line graphs ╭┈╯ in CLI'
+      - '--label=org.opencontainers.image.url=https://github.com/guptarohit/asciigraph'
+      - '--label=org.opencontainers.image.source=https://github.com/guptarohit/asciigraph'
+      - '--label=org.opencontainers.image.version={{ .Version }}'
+      - '--label=org.opencontainers.image.created={{ .Date }}'
+      - '--label=org.opencontainers.image.revision={{ .FullCommit }}'
+      - '--label=org.opencontainers.image.licenses=BSD-3-Clause'
