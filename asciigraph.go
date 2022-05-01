@@ -9,17 +9,45 @@ import (
 
 // Plot returns ascii graph for a series.
 func Plot(series []float64, options ...Option) string {
+	return PlotMany([][]float64{series}, options...)
+}
+
+// PlotMany returns ascii graph for multiple series.
+func PlotMany(data [][]float64, options ...Option) string {
 	var logMaximum float64
 	config := configure(config{
 		Offset:    3,
 		Precision: 2,
 	}, options)
 
-	if config.Width > 0 {
-		series = interpolateArray(series, config.Width)
+	lenMax := 0
+	for i := range data {
+		if l := len(data[i]); l > lenMax {
+			lenMax = l
+		}
 	}
 
-	minimum, maximum := minMaxFloat64Slice(series)
+	if config.Width > 0 {
+		for i := range data {
+			for j := len(data[i]); j < lenMax; j++ {
+				data[i] = append(data[i], math.NaN())
+			}
+			data[i] = interpolateArray(data[i], config.Width)
+		}
+
+		lenMax = config.Width
+	}
+
+	minimum, maximum := math.Inf(1), math.Inf(-1)
+	for i := range data {
+		min, max := minMaxFloat64Slice(data[i])
+		if min < minimum {
+			minimum = min
+		}
+		if max > maximum {
+			maximum = max
+		}
+	}
 	interval := math.Abs(maximum - minimum)
 
 	if config.Height <= 0 {
@@ -47,7 +75,7 @@ func Plot(series []float64, options ...Option) string {
 	intmax2 := int(max2)
 
 	rows := int(math.Abs(float64(intmax2 - intmin2)))
-	width := len(series) + config.Offset
+	width := lenMax + config.Offset
 
 	plot := make([][]string, rows+1)
 
@@ -99,52 +127,54 @@ func Plot(series []float64, options ...Option) string {
 		plot[w][config.Offset-1] = "┤"
 	}
 
-	var y0, y1 int
+	for i := range data {
+		series := data[i]
+		var y0, y1 int
 
-	if !math.IsNaN(series[0]) {
-		y0 = int(round(series[0]*ratio) - min2)
-		plot[rows-y0][config.Offset-1] = "┼" // first value
-	}
-
-	for x := 0; x < len(series)-1; x++ { // plot the line
-
-		d0 := series[x]
-		d1 := series[x+1]
-
-		if math.IsNaN(d0) && math.IsNaN(d1) {
-			continue
+		if !math.IsNaN(series[0]) {
+			y0 = int(round(series[0]*ratio) - min2)
+			plot[rows-y0][config.Offset-1] = "┼" // first value
 		}
 
-		if math.IsNaN(d1) && !math.IsNaN(d0) {
-			y0 = int(round(d0*ratio) - float64(intmin2))
-			plot[rows-y0][x+config.Offset] = "╴"
-			continue
-		}
+		for x := 0; x < len(series)-1; x++ { // plot the line
+			d0 := series[x]
+			d1 := series[x+1]
 
-		if math.IsNaN(d0) && !math.IsNaN(d1) {
-			y1 = int(round(d1*ratio) - float64(intmin2))
-			plot[rows-y1][x+config.Offset] = "╶"
-			continue
-		}
-
-		y0 = int(round(d0*ratio) - float64(intmin2))
-		y1 = int(round(d1*ratio) - float64(intmin2))
-
-		if y0 == y1 {
-			plot[rows-y0][x+config.Offset] = "─"
-		} else {
-			if y0 > y1 {
-				plot[rows-y1][x+config.Offset] = "╰"
-				plot[rows-y0][x+config.Offset] = "╮"
-			} else {
-				plot[rows-y1][x+config.Offset] = "╭"
-				plot[rows-y0][x+config.Offset] = "╯"
+			if math.IsNaN(d0) && math.IsNaN(d1) {
+				continue
 			}
 
-			start := int(math.Min(float64(y0), float64(y1))) + 1
-			end := int(math.Max(float64(y0), float64(y1)))
-			for y := start; y < end; y++ {
-				plot[rows-y][x+config.Offset] = "│"
+			if math.IsNaN(d1) && !math.IsNaN(d0) {
+				y0 = int(round(d0*ratio) - float64(intmin2))
+				plot[rows-y0][x+config.Offset] = "╴"
+				continue
+			}
+
+			if math.IsNaN(d0) && !math.IsNaN(d1) {
+				y1 = int(round(d1*ratio) - float64(intmin2))
+				plot[rows-y1][x+config.Offset] = "╶"
+				continue
+			}
+
+			y0 = int(round(d0*ratio) - float64(intmin2))
+			y1 = int(round(d1*ratio) - float64(intmin2))
+
+			if y0 == y1 {
+				plot[rows-y0][x+config.Offset] = "─"
+			} else {
+				if y0 > y1 {
+					plot[rows-y1][x+config.Offset] = "╰"
+					plot[rows-y0][x+config.Offset] = "╮"
+				} else {
+					plot[rows-y1][x+config.Offset] = "╭"
+					plot[rows-y0][x+config.Offset] = "╯"
+				}
+
+				start := int(math.Min(float64(y0), float64(y1))) + 1
+				end := int(math.Max(float64(y0), float64(y1)))
+				for y := start; y < end; y++ {
+					plot[rows-y][x+config.Offset] = "│"
+				}
 			}
 		}
 	}
@@ -174,8 +204,8 @@ func Plot(series []float64, options ...Option) string {
 	if config.Caption != "" {
 		lines.WriteRune('\n')
 		lines.WriteString(strings.Repeat(" ", config.Offset+maxWidth))
-		if len(config.Caption) < len(series) {
-			lines.WriteString(strings.Repeat(" ", (len(series)-len(config.Caption))/2))
+		if len(config.Caption) < lenMax {
+			lines.WriteString(strings.Repeat(" ", (lenMax-len(config.Caption))/2))
 		}
 		lines.WriteString(config.Caption)
 	}
