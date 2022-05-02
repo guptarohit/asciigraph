@@ -56,7 +56,11 @@ release:
 dockers:
   - image_templates:
       - 'ghcr.io/guptarohit/asciigraph:{{ .Version }}'
-    dockerfile: Dockerfile
+      - 'ghcr.io/guptarohit/asciigraph:{{ .Tag }}'
+      - 'ghcr.io/guptarohit/asciigraph:v{{ .Major }}'
+      - 'ghcr.io/guptarohit/asciigraph:v{{ .Major }}.{{ .Minor }}'
+      - 'ghcr.io/guptarohit/asciigraph:latest'
+    dockerfile: goreleaser.dockerfile
     build_flag_templates:
       - '--label=org.opencontainers.image.title={{ .ProjectName }}'
       - '--label=org.opencontainers.image.name={{ .ProjectName }}'
