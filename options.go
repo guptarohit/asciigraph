@@ -15,6 +15,10 @@ type config struct {
 	Offset        int
 	Caption       string
 	Precision     uint
+	CaptionColor  AnsiColor
+	AxisColor     AnsiColor
+	LabelColor    AnsiColor
+	SeriesColors  []AnsiColor
 }
 
 // An optionFunc applies an option.
@@ -69,5 +73,33 @@ func Precision(p uint) Option {
 func Caption(caption string) Option {
 	return optionFunc(func(c *config) {
 		c.Caption = strings.TrimSpace(caption)
+	})
+}
+
+// CaptionColor sets the caption color.
+func CaptionColor(ac AnsiColor) Option {
+	return optionFunc(func(c *config) {
+		c.CaptionColor = ac
+	})
+}
+
+// AxisColor sets the axis color.
+func AxisColor(ac AnsiColor) Option {
+	return optionFunc(func(c *config) {
+		c.AxisColor = ac
+	})
+}
+
+// LabelColor sets the axis label color.
+func LabelColor(ac AnsiColor) Option {
+	return optionFunc(func(c *config) {
+		c.LabelColor = ac
+	})
+}
+
+// SeriesColors sets the series colors.
+func SeriesColors(ac ...AnsiColor) Option {
+	return optionFunc(func(c *config) {
+		c.SeriesColors = ac
 	})
 }

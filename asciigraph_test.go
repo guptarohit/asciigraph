@@ -242,13 +242,20 @@ func TestPlot(t *testing.T) {
  -0.025449 ┤                         ╰─╮         ╭─╯
  -0.033940 ┤                           ╰╮   ╭────╯
  -0.042430 ┤                            ╰───╯`},
+
+		{
+			[]float64{math.NaN(), 1},
+			[]Option{Caption("color test"), CaptionColor(Red), AxisColor(Green), LabelColor(Blue)},
+			`
+\x1b[94m 1.00\x1b[0m \x1b[32m┤\x1b[0m╶
+       \x1b[91mcolor test\x1b[0m`},
 	}
 
 	for i := range cases {
 		name := fmt.Sprintf("%d", i)
 		t.Run(name, func(t *testing.T) {
 			c := cases[i]
-			expected := strings.TrimPrefix(c.expected, "\n")
+			expected := strings.Replace(strings.TrimPrefix(c.expected, "\n"), `\x1b`, "\x1b", -1)
 			actual := Plot(c.data, c.opts...)
 			if actual != expected {
 				conf := configure(config{}, c.opts)
@@ -297,13 +304,29 @@ func TestPlotMany(t *testing.T) {
  1.00 ┤ ╭───╮
  0.00 ┼─╯   ╰╴
         interpolation test`},
+
+		{
+			[][]float64{{0, 0}, {math.NaN(), 0}},
+			[]Option{SeriesColors(Red)},
+			" 0.00 ┼╶"},
+		{
+			[][]float64{{0, 0}, {math.NaN(), 0}},
+			[]Option{SeriesColors(Default, Red)},
+			" 0.00 ┼\x1b[91m╶\x1b[0m"},
+		{
+			[][]float64{{math.NaN(), 0, 2}, {0, 2}},
+			[]Option{SeriesColors(Red, Red)},
+			`
+ 2.00 ┤\x1b[91m╭╭\x1b[0m
+ 1.00 ┤\x1b[91m││\x1b[0m
+ 0.00 ┼\x1b[91m╯╯\x1b[0m`},
 	}
 
 	for i := range cases {
 		name := fmt.Sprintf("%d", i)
 		t.Run(name, func(t *testing.T) {
 			c := cases[i]
-			expected := strings.TrimPrefix(c.expected, "\n")
+			expected := strings.Replace(strings.TrimPrefix(c.expected, "\n"), `\x1b`, "\x1b", -1)
 			actual := PlotMany(c.data, c.opts...)
 			if actual != expected {
 				conf := configure(config{}, c.opts)

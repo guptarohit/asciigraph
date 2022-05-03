@@ -73,6 +73,43 @@ Running this example would render the following graph:
  0.00 ┼╯     ╰
 ```
 
+### Colored graphs
+
+``` go
+package main
+
+import (
+    "fmt"
+    "github.com/guptarohit/asciigraph"
+)
+
+func main() {
+	data := make([][]float64, 4)
+
+	for i := 0; i < 4; i++ {
+		for x := -20; x <= 20; x++ {
+			v := math.NaN()
+			if r := 20 - i; x >= -r && x <= r {
+				v = math.Sqrt(math.Pow(float64(r), 2)-math.Pow(float64(x), 2)) / 2
+			}
+			data[i] = append(data[i], v)
+		}
+	}
+	graph := asciigraph.PlotMany(data, asciigraph.Precision(0), asciigraph.SeriesColors(
+		asciigraph.Red,
+		asciigraph.Yellow,
+		asciigraph.Green,
+		asciigraph.Blue,
+	))
+
+	fmt.Println(graph)
+}
+```
+
+Running this example would render the following graph:
+
+![colored_graph_image][]
+
 ## Command line interface
 
 This package also brings a small utility for command line usage.
@@ -81,20 +118,28 @@ This package also brings a small utility for command line usage.
 Usage of asciigraph:
   asciigraph [options]
 Options:
+  -ac axis color
+    	y-axis color of the plot
   -b buffer
     	data points buffer when realtime graph enabled, default equal to `width`
   -c caption
     	caption for the graph
+  -cc caption color
+    	caption color of the plot
   -f fps
     	set fps to control how frequently graph to be rendered when realtime graph enabled (default 24)
   -h height
     	height in text rows, 0 for auto-scaling
+  -lc label color
+    	y-axis label color of the plot
   -o offset
     	offset in columns, for the label (default 3)
   -p precision
     	precision of data point labels along the y-axis (default 2)
   -r realtime
     	enables realtime graph for data stream
+  -sc series color
+    	series color of the plot
   -w width
     	width in columns, 0 for auto-scaling
 asciigraph expects data points from stdin. Invalid values are logged to stderr.
@@ -174,6 +219,7 @@ Feel free to make a pull request! :octocat:
 [Mentioned in Awesome Go]: https://awesome.re/mentioned-badge-flat.svg
 [6]: https://github.com/avelino/awesome-go#advanced-console-uis
 [image]: https://user-images.githubusercontent.com/7895001/41509956-b1b2b3d0-7279-11e8-9d19-d7dea17d5e44.png
+[colored_graph_image]: https://user-images.githubusercontent.com/7895001/166443444-40ad8113-2c0f-46d7-9c75-1cf08435ce15.png
 [releases]: https://github.com/guptarohit/asciigraph/releases
 [asciichart]: https://github.com/kroitor/asciichart
 [asciinema]: https://asciinema.org/a/382383.svg

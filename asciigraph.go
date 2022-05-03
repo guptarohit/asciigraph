@@ -77,13 +77,18 @@ func PlotMany(data [][]float64, options ...Option) string {
 	rows := int(math.Abs(float64(intmax2 - intmin2)))
 	width := lenMax + config.Offset
 
-	plot := make([][]string, rows+1)
+	type cell struct {
+		Text  string
+		Color AnsiColor
+	}
+	plot := make([][]cell, rows+1)
 
 	// initialise empty 2D grid
 	for i := 0; i < rows+1; i++ {
-		line := make([]string, width)
+		line := make([]cell, width)
 		for j := 0; j < width; j++ {
-			line[j] = " "
+			line[j].Text = " "
+			line[j].Color = Default
 		}
 		plot[i] = line
 	}
@@ -123,17 +128,26 @@ func PlotMany(data [][]float64, options ...Option) string {
 		w := y - intmin2
 		h := int(math.Max(float64(config.Offset)-float64(len(label)), 0))
 
-		plot[w][h] = label
-		plot[w][config.Offset-1] = "┤"
+		plot[w][h].Text = label
+		plot[w][h].Color = config.LabelColor
+		plot[w][config.Offset-1].Text = "┤"
+		plot[w][config.Offset-1].Color = config.AxisColor
 	}
 
 	for i := range data {
 		series := data[i]
+
+		color := Default
+		if i < len(config.SeriesColors) {
+			color = config.SeriesColors[i]
+		}
+
 		var y0, y1 int
 
 		if !math.IsNaN(series[0]) {
 			y0 = int(round(series[0]*ratio) - min2)
-			plot[rows-y0][config.Offset-1] = "┼" // first value
+			plot[rows-y0][config.Offset-1].Text = "┼" // first value
+			plot[rows-y0][config.Offset-1].Color = config.AxisColor
 		}
 
 		for x := 0; x < len(series)-1; x++ { // plot the line
@@ -146,13 +160,15 @@ func PlotMany(data [][]float64, options ...Option) string {
 
 			if math.IsNaN(d1) && !math.IsNaN(d0) {
 				y0 = int(round(d0*ratio) - float64(intmin2))
-				plot[rows-y0][x+config.Offset] = "╴"
+				plot[rows-y0][x+config.Offset].Text = "╴"
+				plot[rows-y0][x+config.Offset].Color = color
 				continue
 			}
 
 			if math.IsNaN(d0) && !math.IsNaN(d1) {
 				y1 = int(round(d1*ratio) - float64(intmin2))
-				plot[rows-y1][x+config.Offset] = "╶"
+				plot[rows-y1][x+config.Offset].Text = "╶"
+				plot[rows-y1][x+config.Offset].Color = color
 				continue
 			}
 
@@ -160,21 +176,27 @@ func PlotMany(data [][]float64, options ...Option) string {
 			y1 = int(round(d1*ratio) - float64(intmin2))
 
 			if y0 == y1 {
-				plot[rows-y0][x+config.Offset] = "─"
+				plot[rows-y0][x+config.Offset].Text = "─"
 			} else {
 				if y0 > y1 {
-					plot[rows-y1][x+config.Offset] = "╰"
-					plot[rows-y0][x+config.Offset] = "╮"
+					plot[rows-y1][x+config.Offset].Text = "╰"
+					plot[rows-y0][x+config.Offset].Text = "╮"
 				} else {
-					plot[rows-y1][x+config.Offset] = "╭"
-					plot[rows-y0][x+config.Offset] = "╯"
+					plot[rows-y1][x+config.Offset].Text = "╭"
+					plot[rows-y0][x+config.Offset].Text = "╯"
 				}
 
 				start := int(math.Min(float64(y0), float64(y1))) + 1
 				end := int(math.Max(float64(y0), float64(y1)))
 				for y := start; y < end; y++ {
-					plot[rows-y][x+config.Offset] = "│"
+					plot[rows-y][x+config.Offset].Text = "│"
 				}
+			}
+
+			start := int(math.Min(float64(y0), float64(y1)))
+			end := int(math.Max(float64(y0), float64(y1)))
+			for y := start; y <= end; y++ {
+				plot[rows-y][x+config.Offset].Color = color
 			}
 		}
 	}
@@ -189,14 +211,23 @@ func PlotMany(data [][]float64, options ...Option) string {
 		// remove trailing spaces
 		lastCharIndex := 0
 		for i := width - 1; i >= 0; i-- {
-			if horizontal[i] != " " {
+			if horizontal[i].Text != " " {
 				lastCharIndex = i
 				break
 			}
 		}
 
+		c := Default
 		for _, v := range horizontal[:lastCharIndex+1] {
-			lines.WriteString(v)
+			if v.Color != c {
+				c = v.Color
+				lines.WriteString(c.String())
+			}
+
+			lines.WriteString(v.Text)
+		}
+		if c != Default {
+			lines.WriteString(Default.String())
 		}
 	}
 
@@ -207,7 +238,13 @@ func PlotMany(data [][]float64, options ...Option) string {
 		if len(config.Caption) < lenMax {
 			lines.WriteString(strings.Repeat(" ", (lenMax-len(config.Caption))/2))
 		}
+		if config.CaptionColor != Default {
+			lines.WriteString(config.CaptionColor.String())
+		}
 		lines.WriteString(config.Caption)
+		if config.CaptionColor != Default {
+			lines.WriteString(Default.String())
+		}
 	}
 
 	return lines.String()
