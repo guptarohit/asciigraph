@@ -147,7 +147,7 @@ func PlotMany(data [][]float64, options ...Option) string {
 		if !math.IsNaN(series[0]) {
 			y0 = int(round(series[0]*ratio) - min2)
 			plot[rows-y0][config.Offset-1].Text = "┼" // first value
-			plot[rows-y0][config.Offset-1].Color = color
+			plot[rows-y0][config.Offset-1].Color = config.AxisColor
 		}
 
 		for x := 0; x < len(series)-1; x++ { // plot the line

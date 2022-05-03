@@ -308,7 +308,7 @@ func TestPlotMany(t *testing.T) {
 		{
 			[][]float64{{0, 0}, {math.NaN(), 0}},
 			[]Option{SeriesColors(Red)},
-			" 0.00 \x1b[91m┼\x1b[0m╶"},
+			" 0.00 ┼╶"},
 		{
 			[][]float64{{0, 0}, {math.NaN(), 0}},
 			[]Option{SeriesColors(Default, Red)},
@@ -319,7 +319,7 @@ func TestPlotMany(t *testing.T) {
 			`
  2.00 ┤\x1b[91m╭╭\x1b[0m
  1.00 ┤\x1b[91m││\x1b[0m
- 0.00 \x1b[91m┼╯╯\x1b[0m`},
+ 0.00 ┼\x1b[91m╯╯\x1b[0m`},
 	}
 
 	for i := range cases {

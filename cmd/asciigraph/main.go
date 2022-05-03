@@ -22,7 +22,10 @@ var (
 	enableRealTime     bool
 	realTimeDataBuffer int
 	fps                float64 = 24
-	color              asciigraph.AnsiColor
+	seriesColor        asciigraph.AnsiColor
+	captionColor       asciigraph.AnsiColor
+	axisColor          asciigraph.AnsiColor
+	labelColor         asciigraph.AnsiColor
 )
 
 func main() {
@@ -41,14 +44,42 @@ func main() {
 	flag.BoolVar(&enableRealTime, "r", enableRealTime, "enables `realtime` graph for data stream")
 	flag.IntVar(&realTimeDataBuffer, "b", realTimeDataBuffer, "data points `buffer` when realtime graph enabled, default equal to `width`")
 	flag.Float64Var(&fps, "f", fps, "set `fps` to control how frequently graph to be rendered when realtime graph enabled")
-	flag.Func("l", "`color` of the data line", func(str string) error {
+	flag.Func("sc", "`series color` of the plot", func(str string) error {
 		if c, ok := asciigraph.ColorNames[str]; !ok {
-			return errors.New("unrecognized color")
+			return errors.New("unrecognized color, check available color names at https://www.w3.org/TR/SVG11/types.html#ColorKeywords")
 		} else {
-			color = c
+			seriesColor = c
 			return nil
 		}
 	})
+
+	flag.Func("cc", "`caption color` of the plot", func(str string) error {
+		if c, ok := asciigraph.ColorNames[str]; !ok {
+			return errors.New("unrecognized color, check available color names at https://www.w3.org/TR/SVG11/types.html#ColorKeywords")
+		} else {
+			captionColor = c
+			return nil
+		}
+	})
+
+	flag.Func("ac", "y-`axis color` of the plot", func(str string) error {
+		if c, ok := asciigraph.ColorNames[str]; !ok {
+			return errors.New("unrecognized color, check available color names at https://www.w3.org/TR/SVG11/types.html#ColorKeywords")
+		} else {
+			axisColor = c
+			return nil
+		}
+	})
+
+	flag.Func("lc", "y-axis `label color` of the plot", func(str string) error {
+		if c, ok := asciigraph.ColorNames[str]; !ok {
+			return errors.New("unrecognized color, check available color names at https://www.w3.org/TR/SVG11/types.html#ColorKeywords")
+		} else {
+			labelColor = c
+			return nil
+		}
+	})
+
 	flag.Parse()
 
 	data := make([]float64, 0, 64)
@@ -84,7 +115,10 @@ func main() {
 					asciigraph.Offset(int(offset)),
 					asciigraph.Precision(precision),
 					asciigraph.Caption(caption),
-					asciigraph.SeriesColors(color),
+					asciigraph.SeriesColors(seriesColor),
+					asciigraph.CaptionColor(captionColor),
+					asciigraph.AxisColor(axisColor),
+					asciigraph.LabelColor(labelColor),
 				)
 				asciigraph.Clear()
 				fmt.Println(plot)
@@ -107,7 +141,10 @@ func main() {
 			asciigraph.Offset(int(offset)),
 			asciigraph.Precision(precision),
 			asciigraph.Caption(caption),
-			asciigraph.SeriesColors(color),
+			asciigraph.SeriesColors(seriesColor),
+			asciigraph.CaptionColor(captionColor),
+			asciigraph.AxisColor(axisColor),
+			asciigraph.LabelColor(labelColor),
 		)
 
 		fmt.Println(plot)
