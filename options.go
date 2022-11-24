@@ -13,6 +13,7 @@ type Option interface {
 type config struct {
 	Width, Height int
 	Offset        int
+	DataOffset    int
 	Caption       string
 	Precision     uint
 	CaptionColor  AnsiColor
@@ -56,6 +57,12 @@ func Height(h int) Option {
 		} else {
 			c.Height = 0
 		}
+	})
+}
+
+func DataOffset(d int) Option {
+	return optionFunc(func(c *config) {
+		c.DataOffset = d
 	})
 }
 

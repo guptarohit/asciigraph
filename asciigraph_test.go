@@ -249,6 +249,19 @@ func TestPlot(t *testing.T) {
 			`
 \x1b[94m 1.00\x1b[0m \x1b[32m┤\x1b[0m╶
        \x1b[91mcolor test\x1b[0m`},
+		{
+			[]float64{8, 1, 2, 3, 2, 1},
+			[]Option{DataOffset(1)},
+			`
+ 8.00 ┤
+ 7.00 ┤
+ 6.00 ┤
+ 5.00 ┤
+ 4.00 ┤
+ 3.00 ┤ ╭╮
+ 2.00 ┤╭╯╰╮
+ 1.00 ┼╯  ╰`,
+		},
 	}
 
 	for i := range cases {
