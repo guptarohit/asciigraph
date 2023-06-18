@@ -337,3 +337,23 @@ func TestPlotMany(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkPlot(b *testing.B) {
+	data := []float64{2, 1, 1, 2, -2, 5, 7, 11, 3, 7, 1}
+	opts := []Option{Height(4), Offset(3)}
+
+	for i := 0; i < b.N; i++ {
+		Plot(data, opts...)
+	}
+}
+
+func BenchmarkPlotMany(b *testing.B) {
+	data1 := []float64{2, 1, 1, 2, -2, 5, 7, 11, 3, 7, 1}
+	data2 := []float64{5, 3, 2, 7, 1, -2, 9, 4, 3, 2, 1}
+	opts := []Option{Height(4), Offset(3)}
+	datasets := [][]float64{data1, data2}
+
+	for i := 0; i < b.N; i++ {
+		PlotMany(datasets, opts...)
+	}
+}
