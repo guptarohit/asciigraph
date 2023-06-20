@@ -68,6 +68,7 @@ func PlotMany(data [][]float64, options ...Option) string {
 	} else {
 		ratio = 1
 	}
+
 	min2 := round(minimum * ratio)
 	max2 := round(maximum * ratio)
 
@@ -136,6 +137,9 @@ func PlotMany(data [][]float64, options ...Option) string {
 
 	for i := range data {
 		series := data[i]
+		if config.DataOffset != 0 {
+			series = series[config.DataOffset:]
+		}
 
 		color := Default
 		if i < len(config.SeriesColors) {
