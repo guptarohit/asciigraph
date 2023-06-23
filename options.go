@@ -11,14 +11,15 @@ type Option interface {
 
 // config holds various graph options
 type config struct {
-	Width, Height int
-	Offset        int
-	Caption       string
-	Precision     uint
-	CaptionColor  AnsiColor
-	AxisColor     AnsiColor
-	LabelColor    AnsiColor
-	SeriesColors  []AnsiColor
+	Width, Height          int
+	LowerBound, UpperBound *float64
+	Offset                 int
+	Caption                string
+	Precision              uint
+	CaptionColor           AnsiColor
+	AxisColor              AnsiColor
+	LabelColor             AnsiColor
+	SeriesColors           []AnsiColor
 }
 
 // An optionFunc applies an option.
@@ -57,6 +58,18 @@ func Height(h int) Option {
 			c.Height = 0
 		}
 	})
+}
+
+// LowerBound sets the graph's minimum value for the vertical axis. It will be ignored
+// if the series contains a lower value.
+func LowerBound(min float64) Option {
+	return optionFunc(func(c *config) { c.LowerBound = &min })
+}
+
+// UpperBound sets the graph's maximum value for the vertical axis. It will be ignored
+// if the series contains a bigger value.
+func UpperBound(max float64) Option {
+	return optionFunc(func(c *config) { c.UpperBound = &max })
 }
 
 // Offset sets the graphs offset.

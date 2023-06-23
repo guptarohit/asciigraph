@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"strconv"
 	"time"
@@ -26,6 +27,8 @@ var (
 	captionColor       asciigraph.AnsiColor
 	axisColor          asciigraph.AnsiColor
 	labelColor         asciigraph.AnsiColor
+	lowerBound         = math.Inf(1)
+	upperBound         = math.Inf(-1)
 )
 
 func main() {
@@ -79,6 +82,8 @@ func main() {
 			return nil
 		}
 	})
+	flag.Float64Var(&lowerBound, "lb", lowerBound, "`lower bound` set the minimum value for the vertical axis (ignored if series contains lower values)")
+	flag.Float64Var(&upperBound, "ub", upperBound, "`upper bound` set the maximum value for the vertical axis (ignored if series contains larger values)")
 
 	flag.Parse()
 
@@ -119,6 +124,8 @@ func main() {
 					asciigraph.CaptionColor(captionColor),
 					asciigraph.AxisColor(axisColor),
 					asciigraph.LabelColor(labelColor),
+					asciigraph.LowerBound(lowerBound),
+					asciigraph.UpperBound(upperBound),
 				)
 				asciigraph.Clear()
 				fmt.Println(plot)
@@ -145,6 +152,8 @@ func main() {
 			asciigraph.CaptionColor(captionColor),
 			asciigraph.AxisColor(axisColor),
 			asciigraph.LabelColor(labelColor),
+			asciigraph.LowerBound(lowerBound),
+			asciigraph.UpperBound(upperBound),
 		)
 
 		fmt.Println(plot)

@@ -130,6 +130,8 @@ Options:
     	set fps to control how frequently graph to be rendered when realtime graph enabled (default 24)
   -h height
     	height in text rows, 0 for auto-scaling
+  -lb lower bound
+    	lower bound set the minimum value for the vertical axis (ignored if series contains lower values) (default +Inf)
   -lc label color
     	y-axis label color of the plot
   -o offset
@@ -140,6 +142,8 @@ Options:
     	enables realtime graph for data stream
   -sc series color
     	series color of the plot
+  -ub upper bound
+    	upper bound set the maximum value for the vertical axis (ignored if series contains larger values) (default -Inf)
   -w width
     	width in columns, 0 for auto-scaling
 asciigraph expects data points from stdin. Invalid values are logged to stderr.
