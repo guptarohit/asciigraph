@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.6] - 2023-06-24
+
+### Added
+
+- Options to set upper & lower bound of graph
+
 ## [0.5.5] - 2022-05-03
 
 ### Added
