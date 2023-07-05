@@ -9,6 +9,7 @@ import (
 	"math"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/guptarohit/asciigraph"
@@ -87,7 +88,7 @@ func main() {
 
 	flag.Parse()
 
-	data := make([]float64, 0, 64)
+	data := make([][]float64, 0, 64)
 
 	if realTimeDataBuffer == 0 {
 		realTimeDataBuffer = int(width)
@@ -102,19 +103,29 @@ func main() {
 
 	for s.Scan() {
 		word := s.Text()
-		p, err := strconv.ParseFloat(word, 64)
-		if err != nil {
-			log.Printf("ignore %q: cannot parse value", word)
-			continue
+
+		words := strings.Split(word, ",")
+
+		for i, s := range words {
+			p, err := strconv.ParseFloat(s, 64)
+			if err != nil {
+				log.Printf("ignore %q: cannot parse value", s)
+			}
+			if i >= len(data) {
+				data = append(data, []float64{p})
+			} else {
+				data[i] = append(data[i], p)
+			}
+
 		}
-		data = append(data, p)
+
 		if enableRealTime {
 			if realTimeDataBuffer > 0 && len(data) > realTimeDataBuffer {
 				data = data[len(data)-realTimeDataBuffer:]
 			}
 
 			if currentTime := time.Now(); currentTime.After(nextFlushTime) || currentTime.Equal(nextFlushTime) {
-				plot := asciigraph.Plot(data,
+				plot := asciigraph.PlotMany(data,
 					asciigraph.Height(int(height)),
 					asciigraph.Width(int(width)),
 					asciigraph.Offset(int(offset)),
@@ -142,7 +153,7 @@ func main() {
 			log.Fatal("no data")
 		}
 
-		plot := asciigraph.Plot(data,
+		plot := asciigraph.PlotMany(data,
 			asciigraph.Height(int(height)),
 			asciigraph.Width(int(width)),
 			asciigraph.Offset(int(offset)),
