@@ -8,7 +8,7 @@ Go package to make lightweight ASCII line graphs ╭┈╯.
 
 ## Installation
 ``` bash
-go get github.com/guptarohit/asciigraph
+go get -u github.com/guptarohit/asciigraph@latest
 ```
 
 ## Usage
@@ -110,9 +110,26 @@ Running this example would render the following graph:
 
 ![colored_graph_image][]
 
-## Command line interface
+
+## CLI Installation
 
 This package also brings a small utility for command line usage.
+
+Assuming `$GOPATH/bin` is in your `$PATH`, install CLI with following command:
+``` bash
+go install github.com/guptarohit/asciigraph/cmd/asciigraph@latest
+```
+
+or pull Docker image:
+``` bash
+docker pull ghcr.io/guptarohit/asciigraph:latest
+```
+
+or download binaries from the [releases][] page.
+
+
+## CLI Usage
+
 ``` bash                                                                                                                ✘ 0|125  16:19:23
 > asciigraph --help
 Usage of asciigraph:
@@ -149,22 +166,6 @@ Options:
 asciigraph expects data points from stdin. Invalid values are logged to stderr.
 ```
 
-### CLI Installation
-Assuming `$GOPATH/bin` is in your `$PATH`, simply `go get` it then
-install CLI with following command:
-``` bash
-go install github.com/guptarohit/asciigraph/cmd/asciigraph
-```
-
-or pull Docker image:
-``` bash
-docker pull ghcr.io/guptarohit/asciigraph:latest
-```
-
-or download binaries from the [releases][] page.
-
-
-### CLI Usage
 
 Feed it data points via stdin:
 ``` bash
@@ -193,7 +194,7 @@ Output:
                                   plot data from stdin
 ```
 
-Example of real-time graph for data points stream via stdin:
+Example of **real-time graph** for data points stream via stdin:
 ``` bash
 ping -i.2 google.com | grep -oP '(?<=time=).*(?=ms)' --line-buffered | asciigraph -r -h 10 -w 40 -c "realtime plot data (google ping in ms) from stdin"
 ```
