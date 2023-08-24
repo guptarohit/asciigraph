@@ -27,7 +27,15 @@ func main() {
 		asciigraph.Green,
 		asciigraph.Blue,
 		asciigraph.Purple,
-	))
+	), asciigraph.LegendTexts(
+		"Red",
+		"Orange",
+		"Yellow",
+		"Green",
+		"Blue",
+		"Purple",
+	),
+	asciigraph.Caption("Caption"))
 
 	fmt.Println(graph)
 	// Output:

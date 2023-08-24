@@ -110,6 +110,34 @@ Running this example would render the following graph:
 
 ![colored_graph_image][]
 
+### Legend for colored graph
+
+Graphs can have a legend to help reading the graph.
+
+```go
+package main
+
+import (
+    "fmt"
+    "github.com/guptarohit/asciigraph"
+)
+
+func main() {
+	data := [][]float64{{0, 1, 2}, {1, 2, 3}, {2, 3, 4}}
+
+	graph := asciigraph.PlotMany(
+      data,
+      asciigraph.SeriesColors(
+		  asciigraph.Red,
+		  asciigraph.Green,
+		  asciigraph.Blue),
+      asciigraph.LegendTexts(
+        "Red", "Green", "Blue"),
+      )
+
+	fmt.Println(graph)
+}
+```
 
 ## CLI Installation
 

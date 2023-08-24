@@ -253,5 +253,9 @@ func PlotMany(data [][]float64, options ...Option) string {
 		}
 	}
 
+	if len(config.LegendText) > 0 {
+		addLegend(&lines, config, lenMax, config.Offset+maxWidth)
+	}
+	
 	return lines.String()
 }
