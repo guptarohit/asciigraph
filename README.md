@@ -7,7 +7,7 @@ Go package to make lightweight ASCII line graphs ╭┈╯.
 ![image][]
 
 ## Installation
-``` bash
+```bash
 go get -u github.com/guptarohit/asciigraph@latest
 ```
 
@@ -15,7 +15,7 @@ go get -u github.com/guptarohit/asciigraph@latest
 
 ### Basic graph
 
-``` go
+```go
 package main
 
 import (
@@ -32,7 +32,7 @@ func main() {
 ```
 
 Running this example would render the following graph:
-``` bash
+```bash
   10.00 ┤        ╭╮
    9.00 ┤ ╭╮     ││
    8.00 ┤ ││   ╭╮││
@@ -46,7 +46,7 @@ Running this example would render the following graph:
 
 ### Multiple Series
 
-``` go
+```go
 package main
 
 import (
@@ -63,7 +63,7 @@ func main() {
 ```
 
 Running this example would render the following graph:
-``` bash
+```bash
  6.00 ┤    ╭─
  5.00 ┼╮   │
  4.00 ┤╰╮ ╭╯
@@ -75,7 +75,7 @@ Running this example would render the following graph:
 
 ### Colored graphs
 
-``` go
+```go
 package main
 
 import (
@@ -110,18 +110,54 @@ Running this example would render the following graph:
 
 ![colored_graph_image][]
 
+### Legends for colored graphs
+
+The graph can include legends for each series, making it easier to interpret.
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/guptarohit/asciigraph"
+	"math"
+)
+
+func main() {
+	data := make([][]float64, 3)
+	for i := 0; i < 3; i++ {
+		for x := -12; x <= 12; x++ {
+			v := math.NaN()
+			if r := 12 - i; x >= -r && x <= r {
+				v = math.Sqrt(math.Pow(float64(r), 2)-math.Pow(float64(x), 2)) / 2
+			}
+			data[i] = append(data[i], v)
+		}
+	}
+	graph := asciigraph.PlotMany(data,
+		asciigraph.Precision(0),
+		asciigraph.SeriesColors(asciigraph.Red, asciigraph.Green, asciigraph.Blue),
+		asciigraph.SeriesLegends("Red", "Green", "Blue"),
+		asciigraph.Caption("Series with legends"))
+	fmt.Println(graph)
+}
+```
+Running this example would render the following graph:
+
+![graph_with_legends_image][]
+
 
 ## CLI Installation
 
 This package also brings a small utility for command line usage.
 
 Assuming `$GOPATH/bin` is in your `$PATH`, install CLI with following command:
-``` bash
+```bash
 go install github.com/guptarohit/asciigraph/cmd/asciigraph@latest
 ```
 
 or pull Docker image:
-``` bash
+```bash
 docker pull ghcr.io/guptarohit/asciigraph:latest
 ```
 
@@ -130,7 +166,7 @@ or download binaries from the [releases][] page.
 
 ## CLI Usage
 
-``` bash                                                                                                                ✘ 0|125  16:19:23
+```bash                                                                                                                ✘ 0|125  16:19:23
 > asciigraph --help
 Usage of asciigraph:
   asciigraph [options]
@@ -168,18 +204,18 @@ asciigraph expects data points from stdin. Invalid values are logged to stderr.
 
 
 Feed it data points via stdin:
-``` bash
+```bash
 seq 1 72 | asciigraph -h 10 -c "plot data from stdin"
 ```
 
 or use Docker image:
-``` bash
+```bash
 seq 1 72 | docker run -i --rm ghcr.io/guptarohit/asciigraph -h 10 -c "plot data from stdin"
 ```
 
 Output:
 
-``` bash
+```bash
  72.00 ┤                                                                  ╭────
  64.90 ┤                                                           ╭──────╯
  57.80 ┤                                                    ╭──────╯
@@ -195,7 +231,7 @@ Output:
 ```
 
 Example of **real-time graph** for data points stream via stdin:
-``` bash
+```bash
 ping -i.2 google.com | grep -oP '(?<=time=).*(?=ms)' --line-buffered | asciigraph -r -h 10 -w 40 -c "realtime plot data (google ping in ms) from stdin"
 ```
 [![asciinema][]][7]
@@ -229,3 +265,4 @@ Feel free to make a pull request! :octocat:
 [asciichart]: https://github.com/kroitor/asciichart
 [asciinema]: https://asciinema.org/a/382383.svg
 [7]: https://asciinema.org/a/382383
+[graph_with_legends_image]: https://github.com/guptarohit/asciigraph/assets/7895001/4066ee95-55ca-42a4-8a03-e73ce20df5d3

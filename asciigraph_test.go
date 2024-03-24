@@ -358,6 +358,19 @@ func TestPlotMany(t *testing.T) {
  2.00 ┤\x1b[91m╭╭\x1b[0m
  1.00 ┤\x1b[91m││\x1b[0m
  0.00 ┼\x1b[91m╯╯\x1b[0m`},
+		{
+			[][]float64{{0, 1, 0}, {2, 3, 4, 3, 2}},
+			[]Option{SeriesColors(Red, Blue), SeriesLegends("Red", "Blue"),
+				Caption("legends with caption test")},
+			`
+ 4.00 ┤ [94m╭╮[0m
+ 3.00 ┤[94m╭╯╰╮[0m
+ 2.00 ┼[94m╯[0m  [94m╰[0m
+ 1.00 ┤[91m╭╮[0m
+ 0.00 ┼[91m╯╰[0m
+       legends with caption test
+
+       [91m■[0m Red   [94m■[0m Blue`},
 	}
 
 	for i := range cases {
