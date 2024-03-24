@@ -27,10 +27,19 @@ func main() {
 		asciigraph.Green,
 		asciigraph.Blue,
 		asciigraph.Purple,
-	))
+	), asciigraph.SeriesLegends(
+		"Red",
+		"Orange",
+		"Yellow",
+		"Green",
+		"Blue",
+		"Purple",
+	),
+		asciigraph.Caption("Rainbow with color legends"))
 
 	fmt.Println(graph)
 	// Output:
+	//   20 ┤
 	//   20 ┤                               ╭───────╭╮───────╮
 	//   19 ┤                        ╭──╭───╭───────╭╮───────╮───╮──╮
 	//   18 ┤                    ╭─╭──╭─╭───╭───────╭╮───────╮───╮─╮──╮─╮
@@ -52,4 +61,7 @@ func main() {
 	//    2 ┤││││││                                                                    ││││││
 	//    1 ┤││││││                                                                    ││││││
 	//    0 ┼╶╶╶╶╶╯                                                                    ╰╴╴╴╴╴
+	//                                  Rainbow with color legends
+	//
+	//                   ■ Red   ■ Orange   ■ Yellow   ■ Green   ■ Blue   ■ Purple
 }

@@ -7,38 +7,39 @@ import (
 	"unicode/utf8"
 )
 
-// Get legend item as a colored box and text
-func getLegendItem(text string, color AnsiColor) (string, int) {
+// Create legend item as a colored box and text
+func createLegendItem(text string, color AnsiColor) (string, int) {
 	return fmt.Sprintf(
-		"%s■%s %s",
-		color.String(),
-		Default.String(),
-		text,
-	// Can't use len() because of AnsiColor, add 2 for box and space
-	), utf8.RuneCountInString(text) + 2
+			"%s■%s %s",
+			color.String(),
+			Default.String(),
+			text,
+		),
+		// Can't use len() because of AnsiColor, add 2 for box and space
+		utf8.RuneCountInString(text) + 2
 }
 
 // Add legend for each series added to the graph
-func addLegend(lines* bytes.Buffer, config* config, lenMax int, leftPad int) {
+func addLegends(lines *bytes.Buffer, config *config, lenMax int, leftPad int) {
 	lines.WriteString("\n\n")
 	lines.WriteString(strings.Repeat(" ", leftPad))
-	
-	var legendText string
-	var legendLen int
-	rightPad := 3
-	for i, text := range config.LegendText {
-		item, itemLen := getLegendItem(text, config.SeriesColors[i])
-		legendText += item
-		legendLen += itemLen
 
-		if i < len(config.LegendText) - 1 {
-			legendText += strings.Repeat(" ", rightPad)
-			legendLen += rightPad
+	var legendsText string
+	var legendsTextLen int
+	rightPad := 3
+	for i, text := range config.SeriesLegends {
+		item, itemLen := createLegendItem(text, config.SeriesColors[i])
+		legendsText += item
+		legendsTextLen += itemLen
+
+		if i < len(config.SeriesLegends)-1 {
+			legendsText += strings.Repeat(" ", rightPad)
+			legendsTextLen += rightPad
 		}
 	}
-	
-	if legendLen < lenMax {
-		lines.WriteString(strings.Repeat(" ", (lenMax-legendLen)/2))
+
+	if legendsTextLen < lenMax {
+		lines.WriteString(strings.Repeat(" ", (lenMax-legendsTextLen)/2))
 	}
-	lines.WriteString(legendText)
+	lines.WriteString(legendsText)
 }

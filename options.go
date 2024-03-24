@@ -20,7 +20,7 @@ type config struct {
 	AxisColor              AnsiColor
 	LabelColor             AnsiColor
 	SeriesColors           []AnsiColor
-	LegendText             []string
+	SeriesLegends          []string
 }
 
 // An optionFunc applies an option.
@@ -118,8 +118,9 @@ func SeriesColors(ac ...AnsiColor) Option {
 	})
 }
 
-func LegendTexts(text ...string) Option {
+// SeriesLegends sets the legend text for the corresponding series.
+func SeriesLegends(text ...string) Option {
 	return optionFunc(func(c *config) {
-		c.LegendText = text
+		c.SeriesLegends = text
 	})
 }
