@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.0] - 2024-03-25
+
+### Added
+
+- Option to add legends for colored graphs
+
 ## [0.5.6] - 2023-06-24
 
 ### Added
