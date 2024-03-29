@@ -28,8 +28,10 @@ var (
 	captionColor       asciigraph.AnsiColor
 	axisColor          asciigraph.AnsiColor
 	labelColor         asciigraph.AnsiColor
-	lowerBound         = math.Inf(1)
-	upperBound         = math.Inf(-1)
+	lowerBound              = math.Inf(1)
+	upperBound              = math.Inf(-1)
+	delimiter               = ","
+	seriesNum          uint = 1
 )
 
 func main() {
@@ -85,47 +87,54 @@ func main() {
 	})
 	flag.Float64Var(&lowerBound, "lb", lowerBound, "`lower bound` set the minimum value for the vertical axis (ignored if series contains lower values)")
 	flag.Float64Var(&upperBound, "ub", upperBound, "`upper bound` set the maximum value for the vertical axis (ignored if series contains larger values)")
+	flag.StringVar(&delimiter, "d", delimiter, "data `delimiter` for splitting data points in the input stream")
+	flag.UintVar(&seriesNum, "sn", seriesNum, "`number of series` (columns) in the input data")
 
 	flag.Parse()
 
-	data := make([][]float64, 0, 64)
+	series := make([][]float64, seriesNum)
 
-	if realTimeDataBuffer == 0 {
+	if enableRealTime && realTimeDataBuffer == 0 {
 		realTimeDataBuffer = int(width)
 	}
 
 	s := bufio.NewScanner(os.Stdin)
-	s.Split(bufio.ScanWords)
+	s.Split(bufio.ScanLines)
 
 	nextFlushTime := time.Now()
 
 	flushInterval := time.Duration(float64(time.Second) / fps)
 
 	for s.Scan() {
-		word := s.Text()
+		line := s.Text()
+		points := strings.Split(line, delimiter)
 
-		words := strings.Split(word, ",")
-
-		for i, s := range words {
-			p, err := strconv.ParseFloat(s, 64)
-			if err != nil {
-				log.Printf("ignore %q: cannot parse value", s)
-			}
-			if i >= len(data) {
-				data = append(data, []float64{p})
-			} else {
-				data[i] = append(data[i], p)
-			}
-
+		if uint(len(points)) < seriesNum {
+			log.Fatal("number of series in the input data stream is less than the specified series number")
+		} else if uint(len(points)) > seriesNum {
+			points = points[:seriesNum]
 		}
 
+		for i, point := range points {
+			p, err := strconv.ParseFloat(strings.TrimSpace(point), 64)
+			if err != nil {
+				log.Printf("ignore %q: cannot parse value", point)
+				p = math.NaN()
+			}
+			series[i] = append(series[i], p)
+
+		}
 		if enableRealTime {
-			if realTimeDataBuffer > 0 && len(data) > realTimeDataBuffer {
-				data = data[len(data)-realTimeDataBuffer:]
+			if realTimeDataBuffer > 0 && len(series[0]) > realTimeDataBuffer {
+				for i := range series {
+					seriesLength := len(series[i])
+					series[i] = series[i][seriesLength-realTimeDataBuffer:]
+				}
 			}
 
 			if currentTime := time.Now(); currentTime.After(nextFlushTime) || currentTime.Equal(nextFlushTime) {
-				plot := asciigraph.PlotMany(data,
+				seriesCopy := append([][]float64(nil), series...)
+				plot := asciigraph.PlotMany(seriesCopy,
 					asciigraph.Height(int(height)),
 					asciigraph.Width(int(width)),
 					asciigraph.Offset(int(offset)),
@@ -149,11 +158,11 @@ func main() {
 			log.Fatal(err)
 		}
 
-		if len(data) == 0 {
+		if len(series) == 0 {
 			log.Fatal("no data")
 		}
 
-		plot := asciigraph.PlotMany(data,
+		plot := asciigraph.PlotMany(series,
 			asciigraph.Height(int(height)),
 			asciigraph.Width(int(width)),
 			asciigraph.Offset(int(offset)),
