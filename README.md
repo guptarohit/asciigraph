@@ -179,6 +179,8 @@ Options:
     	caption for the graph
   -cc caption color
     	caption color of the plot
+  -d delimiter
+    	data delimiter for splitting data points in the input stream (default ",")
   -f fps
     	set fps to control how frequently graph to be rendered when realtime graph enabled (default 24)
   -h height
@@ -195,6 +197,8 @@ Options:
     	enables realtime graph for data stream
   -sc series color
     	series color of the plot
+  -sn number of series
+    	number of series (columns) in the input data (default 1)
   -ub upper bound
     	upper bound set the maximum value for the vertical axis (ignored if series contains larger values) (default -Inf)
   -w width
