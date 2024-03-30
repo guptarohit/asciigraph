@@ -24,7 +24,7 @@ var (
 	enableRealTime     bool
 	realTimeDataBuffer int
 	fps                float64 = 24
-	seriesColor        asciigraph.AnsiColor
+	seriesColors       []asciigraph.AnsiColor
 	captionColor       asciigraph.AnsiColor
 	axisColor          asciigraph.AnsiColor
 	labelColor         asciigraph.AnsiColor
@@ -50,17 +50,17 @@ func main() {
 	flag.BoolVar(&enableRealTime, "r", enableRealTime, "enables `realtime` graph for data stream")
 	flag.IntVar(&realTimeDataBuffer, "b", realTimeDataBuffer, "data points `buffer` when realtime graph enabled, default equal to `width`")
 	flag.Float64Var(&fps, "f", fps, "set `fps` to control how frequently graph to be rendered when realtime graph enabled")
-	flag.Func("sc", "`series color` of the plot", func(str string) error {
-		if c, ok := asciigraph.ColorNames[str]; !ok {
+	flag.Func("sc", "comma-separated `series colors` corresponding to each series", func(str string) error {
+		if colors, ok := parseColors(str); !ok {
 			return errors.New("unrecognized color, check available color names at https://www.w3.org/TR/SVG11/types.html#ColorKeywords")
 		} else {
-			seriesColor = c
+			seriesColors = colors
 			return nil
 		}
 	})
 
 	flag.Func("cc", "`caption color` of the plot", func(str string) error {
-		if c, ok := asciigraph.ColorNames[str]; !ok {
+		if c, ok := parseColor(str); !ok {
 			return errors.New("unrecognized color, check available color names at https://www.w3.org/TR/SVG11/types.html#ColorKeywords")
 		} else {
 			captionColor = c
@@ -69,7 +69,7 @@ func main() {
 	})
 
 	flag.Func("ac", "y-`axis color` of the plot", func(str string) error {
-		if c, ok := asciigraph.ColorNames[str]; !ok {
+		if c, ok := parseColor(str); !ok {
 			return errors.New("unrecognized color, check available color names at https://www.w3.org/TR/SVG11/types.html#ColorKeywords")
 		} else {
 			axisColor = c
@@ -78,7 +78,7 @@ func main() {
 	})
 
 	flag.Func("lc", "y-axis `label color` of the plot", func(str string) error {
-		if c, ok := asciigraph.ColorNames[str]; !ok {
+		if c, ok := parseColor(str); !ok {
 			return errors.New("unrecognized color, check available color names at https://www.w3.org/TR/SVG11/types.html#ColorKeywords")
 		} else {
 			labelColor = c
@@ -122,8 +122,8 @@ func main() {
 				p = math.NaN()
 			}
 			series[i] = append(series[i], p)
-
 		}
+
 		if enableRealTime {
 			if realTimeDataBuffer > 0 && len(series[0]) > realTimeDataBuffer {
 				for i := range series {
@@ -140,7 +140,7 @@ func main() {
 					asciigraph.Offset(int(offset)),
 					asciigraph.Precision(precision),
 					asciigraph.Caption(caption),
-					asciigraph.SeriesColors(seriesColor),
+					asciigraph.SeriesColors(seriesColors...),
 					asciigraph.CaptionColor(captionColor),
 					asciigraph.AxisColor(axisColor),
 					asciigraph.LabelColor(labelColor),
@@ -168,7 +168,7 @@ func main() {
 			asciigraph.Offset(int(offset)),
 			asciigraph.Precision(precision),
 			asciigraph.Caption(caption),
-			asciigraph.SeriesColors(seriesColor),
+			asciigraph.SeriesColors(seriesColors...),
 			asciigraph.CaptionColor(captionColor),
 			asciigraph.AxisColor(axisColor),
 			asciigraph.LabelColor(labelColor),
@@ -178,4 +178,24 @@ func main() {
 
 		fmt.Println(plot)
 	}
+}
+
+func parseColors(colors string) ([]asciigraph.AnsiColor, bool) {
+	colorList := strings.Split(colors, ",")
+	parsedColors := make([]asciigraph.AnsiColor, len(colorList))
+
+	for i, color := range colorList {
+		parsedColor, ok := parseColor(strings.TrimSpace(color))
+		if !ok {
+			return parsedColors, ok
+		}
+		parsedColors[i] = parsedColor
+	}
+
+	return parsedColors, true
+}
+
+func parseColor(color string) (asciigraph.AnsiColor, bool) {
+	parsedColor, ok := asciigraph.ColorNames[color]
+	return parsedColor, ok
 }

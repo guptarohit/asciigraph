@@ -195,8 +195,8 @@ Options:
     	precision of data point labels along the y-axis (default 2)
   -r realtime
     	enables realtime graph for data stream
-  -sc series color
-    	series color of the plot
+  -sc series colors
+    	comma-separated series colors corresponding to each series
   -sn number of series
     	number of series (columns) in the input data (default 1)
   -ub upper bound
