@@ -236,11 +236,31 @@ Output:
                                   plot data from stdin
 ```
 
+
 Example of **real-time graph** for data points stream via stdin:
-```bash
+
+<a href="https://asciinema.org/a/382383" target="_blank"><img width="500" alt="Realtime graph for data points via stdin (google ping) using asciigraph" src="https://asciinema.org/a/382383.svg" /></a>
+
+<details>
+<summary>command for above graph</summary>
+
+```sh
 ping -i.2 google.com | grep -oP '(?<=time=).*(?=ms)' --line-buffered | asciigraph -r -h 10 -w 40 -c "realtime plot data (google ping in ms) from stdin"
 ```
-[![asciinema][]][7]
+</details>
+
+
+Example of **multi-series real-time graph** for data points stream via stdin:
+
+<a href="https://asciinema.org/a/649906" target="_blank"><img width="500" alt="Ping latency comparison: Google (Blue) vs. DuckDuckGo (Red) with asciigraph" src="https://asciinema.org/a/649906.svg" /></a>
+
+<details>
+<summary>command for above graph</summary>
+
+```sh
+{unbuffer paste -d, <(ping -i 0.4 google.com | sed -u -n -E 's/.*time=(.*)ms.*/\1/p') <(ping -i 0.4 duckduckgo.com | sed -u -n -E 's/.*time=(.*)ms.*/\1/p') } | asciigraph -r -h 15 -w 60 -sn 2 -sc "blue,red" -c "Ping Latency Comparison" -sl "Google, DuckDuckGo"
+```
+</details>
 
 
 ## Acknowledgement
@@ -269,6 +289,4 @@ Feel free to make a pull request! :octocat:
 [colored_graph_image]: https://user-images.githubusercontent.com/7895001/166443444-40ad8113-2c0f-46d7-9c75-1cf08435ce15.png
 [releases]: https://github.com/guptarohit/asciigraph/releases
 [asciichart]: https://github.com/kroitor/asciichart
-[asciinema]: https://asciinema.org/a/382383.svg
-[7]: https://asciinema.org/a/382383
 [graph_with_legends_image]: https://github.com/guptarohit/asciigraph/assets/7895001/4066ee95-55ca-42a4-8a03-e73ce20df5d3
