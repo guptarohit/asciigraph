@@ -113,6 +113,8 @@ func main() {
 
 	flushInterval := time.Duration(float64(time.Second) / fps)
 
+	var prevLines int
+
 	for s.Scan() {
 		line := s.Text()
 		points := strings.Split(line, delimiter)
@@ -141,6 +143,10 @@ func main() {
 			}
 
 			if currentTime := time.Now(); currentTime.After(nextFlushTime) || currentTime.Equal(nextFlushTime) {
+				if prevLines > 0 {
+					fmt.Printf("\033[%dA\033[J", prevLines+1)
+				}
+
 				seriesCopy := append([][]float64(nil), series...)
 				plot := asciigraph.PlotMany(seriesCopy,
 					asciigraph.Height(int(height)),
@@ -158,6 +164,8 @@ func main() {
 				)
 				asciigraph.Clear()
 				fmt.Println(plot)
+
+				prevLines = strings.Count(plot, "\n")
 				nextFlushTime = time.Now().Add(flushInterval)
 			}
 		}
