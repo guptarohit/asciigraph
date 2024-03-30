@@ -197,6 +197,8 @@ Options:
     	enables realtime graph for data stream
   -sc series colors
     	comma-separated series colors corresponding to each series
+  -sl series legends
+    	comma-separated series legends corresponding to each series
   -sn number of series
     	number of series (columns) in the input data (default 1)
   -ub upper bound
