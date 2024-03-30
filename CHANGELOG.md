@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.0] - 2024-03-30
+
+### Added
+
+- CLI: Options to specify delimiter and number of series
+
+### Changed
+
+- CLI: Option `sc` to specify series colors
+
 ## [0.6.0] - 2024-03-25
 
 ### Added
@@ -71,6 +81,9 @@ All notable changes to this project will be documented in this file.
 - Prevent panics when data is flat. (#8)
 - Prevent BADPREC issue when maximum and minimum values in a series are 0. (#10)
 
+[0.7.0]: https://github.com/guptarohit/asciigraph/releases/tag/v0.7.0
+[0.6.0]: https://github.com/guptarohit/asciigraph/releases/tag/v0.6.0
+[0.5.6]: https://github.com/guptarohit/asciigraph/releases/tag/v0.5.6
 [0.5.5]: https://github.com/guptarohit/asciigraph/releases/tag/v0.5.5
 [0.5.4]: https://github.com/guptarohit/asciigraph/releases/tag/v0.5.4
 [0.5.3]: https://github.com/guptarohit/asciigraph/releases/tag/v0.5.3
