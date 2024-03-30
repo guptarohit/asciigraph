@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.1] - 2024-03-30
+
+### Added
+
+- CLI: Option to specify legends for series (`sl`)
+
 ## [0.7.0] - 2024-03-30
 
 ### Added
@@ -81,6 +87,7 @@ All notable changes to this project will be documented in this file.
 - Prevent panics when data is flat. (#8)
 - Prevent BADPREC issue when maximum and minimum values in a series are 0. (#10)
 
+[0.7.1]: https://github.com/guptarohit/asciigraph/releases/tag/v0.7.1
 [0.7.0]: https://github.com/guptarohit/asciigraph/releases/tag/v0.7.0
 [0.6.0]: https://github.com/guptarohit/asciigraph/releases/tag/v0.6.0
 [0.5.6]: https://github.com/guptarohit/asciigraph/releases/tag/v0.5.6
