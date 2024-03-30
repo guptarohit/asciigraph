@@ -25,6 +25,7 @@ var (
 	realTimeDataBuffer int
 	fps                float64 = 24
 	seriesColors       []asciigraph.AnsiColor
+	seriesLegends      []string
 	captionColor       asciigraph.AnsiColor
 	axisColor          asciigraph.AnsiColor
 	labelColor         asciigraph.AnsiColor
@@ -85,6 +86,13 @@ func main() {
 			return nil
 		}
 	})
+	flag.Func("sl", "comma-separated `series legends` corresponding to each series", func(str string) error {
+		for _, legend := range strings.Split(str, ",") {
+			seriesLegends = append(seriesLegends, strings.TrimSpace(legend))
+		}
+		return nil
+	})
+
 	flag.Float64Var(&lowerBound, "lb", lowerBound, "`lower bound` set the minimum value for the vertical axis (ignored if series contains lower values)")
 	flag.Float64Var(&upperBound, "ub", upperBound, "`upper bound` set the maximum value for the vertical axis (ignored if series contains larger values)")
 	flag.StringVar(&delimiter, "d", delimiter, "data `delimiter` for splitting data points in the input stream")
@@ -141,6 +149,7 @@ func main() {
 					asciigraph.Precision(precision),
 					asciigraph.Caption(caption),
 					asciigraph.SeriesColors(seriesColors...),
+					asciigraph.SeriesLegends(seriesLegends...),
 					asciigraph.CaptionColor(captionColor),
 					asciigraph.AxisColor(axisColor),
 					asciigraph.LabelColor(labelColor),
@@ -169,6 +178,7 @@ func main() {
 			asciigraph.Precision(precision),
 			asciigraph.Caption(caption),
 			asciigraph.SeriesColors(seriesColors...),
+			asciigraph.SeriesLegends(seriesLegends...),
 			asciigraph.CaptionColor(captionColor),
 			asciigraph.AxisColor(axisColor),
 			asciigraph.LabelColor(labelColor),
