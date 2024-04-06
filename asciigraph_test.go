@@ -303,6 +303,24 @@ func TestPlot(t *testing.T) {
 			t.Logf("actual:\n%s\n", actual)
 		})
 	}
+
+	for i := range cases {
+		name := fmt.Sprintf("%d", i)
+		t.Run(name, func(t *testing.T) {
+			c := cases[i]
+			expected := strings.Replace(strings.TrimPrefix(c.expected, "\n"), `\x1b`, "\x1b", -1)
+			g := NewGraph([][]float64{c.data}, c.opts...)
+
+			actual := g.Plot()
+			if actual != expected {
+				conf := configure(config{}, c.opts)
+				t.Errorf("Plot(%f, %#v)", c.data, conf)
+				t.Logf("expected:\n%s\n", expected)
+			}
+			t.Logf("actual:\n%s\n", actual)
+		})
+	}
+
 }
 
 func TestPlotMany(t *testing.T) {
@@ -387,6 +405,22 @@ func TestPlotMany(t *testing.T) {
 			t.Logf("actual:\n%s\n", actual)
 		})
 	}
+
+	for i := range cases {
+		name := fmt.Sprintf("%d", i)
+		t.Run(name, func(t *testing.T) {
+			c := cases[i]
+			expected := strings.Replace(strings.TrimPrefix(c.expected, "\n"), `\x1b`, "\x1b", -1)
+			g := NewGraph(c.data, c.opts...)
+			actual := g.Plot()
+			if actual != expected {
+				conf := configure(config{}, c.opts)
+				t.Errorf("Plot(%f, %#v)", c.data, conf)
+				t.Logf("expected:\n%s\n", expected)
+			}
+			t.Logf("actual:\n%s\n", actual)
+		})
+	}
 }
 
 func BenchmarkPlot(b *testing.B) {
@@ -394,7 +428,8 @@ func BenchmarkPlot(b *testing.B) {
 	opts := []Option{Height(4), Offset(3)}
 
 	for i := 0; i < b.N; i++ {
-		Plot(data, opts...)
+		g := NewGraph([][]float64{data}, opts...)
+		g.Plot()
 	}
 }
 
@@ -405,6 +440,7 @@ func BenchmarkPlotMany(b *testing.B) {
 	datasets := [][]float64{data1, data2}
 
 	for i := 0; i < b.N; i++ {
-		PlotMany(datasets, opts...)
+		g := NewGraph(datasets, opts...)
+		g.Plot()
 	}
 }

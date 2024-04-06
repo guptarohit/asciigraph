@@ -20,7 +20,7 @@ func main() {
 			data[i] = append(data[i], v)
 		}
 	}
-	graph := asciigraph.PlotMany(data, asciigraph.Precision(0), asciigraph.SeriesColors(
+	graph := asciigraph.NewGraph(data, asciigraph.Precision(0), asciigraph.SeriesColors(
 		asciigraph.Red,
 		asciigraph.Orange,
 		asciigraph.Yellow,
@@ -36,8 +36,9 @@ func main() {
 		"Purple",
 	),
 		asciigraph.Caption("Rainbow with color legends"))
+	plot := graph.Plot()
 
-	fmt.Println(graph)
+	fmt.Println(plot)
 	// Output:
 	//   20 ┤
 	//   20 ┤                               ╭───────╭╮───────╮

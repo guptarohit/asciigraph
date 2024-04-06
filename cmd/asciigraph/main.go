@@ -142,7 +142,7 @@ func main() {
 
 			if currentTime := time.Now(); currentTime.After(nextFlushTime) || currentTime.Equal(nextFlushTime) {
 				seriesCopy := append([][]float64(nil), series...)
-				plot := asciigraph.PlotMany(seriesCopy,
+				g := asciigraph.NewGraph(seriesCopy,
 					asciigraph.Height(int(height)),
 					asciigraph.Width(int(width)),
 					asciigraph.Offset(int(offset)),
@@ -156,6 +156,7 @@ func main() {
 					asciigraph.LowerBound(lowerBound),
 					asciigraph.UpperBound(upperBound),
 				)
+				plot := g.Plot()
 				asciigraph.Clear()
 				fmt.Println(plot)
 				nextFlushTime = time.Now().Add(flushInterval)
@@ -171,7 +172,7 @@ func main() {
 			log.Fatal("no data")
 		}
 
-		plot := asciigraph.PlotMany(series,
+		g := asciigraph.NewGraph(series,
 			asciigraph.Height(int(height)),
 			asciigraph.Width(int(width)),
 			asciigraph.Offset(int(offset)),
@@ -185,7 +186,7 @@ func main() {
 			asciigraph.LowerBound(lowerBound),
 			asciigraph.UpperBound(upperBound),
 		)
-
+		plot := g.Plot()
 		fmt.Println(plot)
 	}
 }
