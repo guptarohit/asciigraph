@@ -20,6 +20,14 @@ func PlotMany(data [][]float64, options ...Option) string {
 		Precision: 2,
 	}, options)
 
+	// Create a deep copy of the input data
+	dataCopy := make([][]float64, len(data))
+	for i, series := range data {
+		dataCopy[i] = make([]float64, len(series))
+		copy(dataCopy[i], series)
+	}
+	data = dataCopy
+
 	lenMax := 0
 	for i := range data {
 		if l := len(data[i]); l > lenMax {
