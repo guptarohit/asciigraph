@@ -21,7 +21,10 @@ type config struct {
 	LabelColor             AnsiColor
 	SeriesColors           []AnsiColor
 	SeriesLegends          []string
+	ValueFormatter         NumberFormatter
 }
+
+type NumberFormatter func(float64) string
 
 // An optionFunc applies an option.
 type optionFunc func(*config)
@@ -122,5 +125,12 @@ func SeriesColors(ac ...AnsiColor) Option {
 func SeriesLegends(text ...string) Option {
 	return optionFunc(func(c *config) {
 		c.SeriesLegends = text
+	})
+}
+
+// ValueFormatter formats values printed to the side of graphs
+func ValueFormatter(f NumberFormatter) Option {
+	return optionFunc(func(c *config) {
+		c.ValueFormatter = f
 	})
 }
