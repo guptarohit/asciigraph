@@ -125,11 +125,15 @@ func PlotMany(data [][]float64, options ...Option) string {
 		precision = 0
 	}
 
-	maxNumLength := len(fmt.Sprintf("%0.*f", precision, maximum))
-	minNumLength := len(fmt.Sprintf("%0.*f", precision, minimum))
-	maxWidth := int(math.Max(float64(maxNumLength), float64(minNumLength)))
+	maxNumLength, minNumLength := 0, math.MaxInt64
+	var magnitudes []float64
 
-	// axis and labels
+	if config.ValueFormatter == nil {
+		maxNumLength = len(fmt.Sprintf("%0.*f", precision, maximum))
+		minNumLength = len(fmt.Sprintf("%0.*f", precision, minimum))
+	}
+
+	// calculate label magnitudes and the length when formatted using the ValueFormatter
 	for y := intmin2; y < intmax2+1; y++ {
 		var magnitude float64
 		if rows > 0 {
@@ -137,9 +141,30 @@ func PlotMany(data [][]float64, options ...Option) string {
 		} else {
 			magnitude = float64(y)
 		}
+		magnitudes = append(magnitudes, magnitude)
 
-		label := fmt.Sprintf("%*.*f", maxWidth+1, precision, magnitude)
-		w := y - intmin2
+		if config.ValueFormatter != nil {
+			l := len(config.ValueFormatter(magnitude))
+			if l > maxNumLength {
+				maxNumLength = l
+			}
+			if l < minNumLength {
+				minNumLength = l
+			}
+		}
+	}
+	maxWidth := int(math.Max(float64(maxNumLength), float64(minNumLength)))
+
+	// axis and labels reusing the previously calculated magnitudes
+	for w, magnitude := range magnitudes {
+		var label string
+		if config.ValueFormatter == nil {
+			label = fmt.Sprintf("%*.*f", maxWidth+1, precision, magnitude)
+		} else {
+			val := config.ValueFormatter(magnitude)
+			label = strings.Repeat(" ", maxWidth+1-len(val)) + val
+		}
+
 		h := int(math.Max(float64(config.Offset)-float64(len(label)), 0))
 
 		plot[w][h].Text = label

@@ -52,7 +52,6 @@ func linearInterpolate(before, after, atPoint float64) float64 {
 }
 
 func interpolateArray(data []float64, fitCount int) []float64 {
-
 	var interpolatedData []float64
 
 	springFactor := float64(len(data)-1) / float64(fitCount-1)
