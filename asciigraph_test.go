@@ -13,6 +13,7 @@ func TestPlot(t *testing.T) {
 		opts     []Option
 		expected string
 	}{
+
 		{
 			[]float64{1, 1, 1, 1, 1},
 			nil,
@@ -309,7 +310,19 @@ func TestPlot(t *testing.T) {
 			`
  0.30 ┤╭╮╭
  0.20 ┼╯││
- 0.10 ┤ ╰╯`},
+	 0.10 ┤ ╰╯`},
+		{
+			[]float64{70 * 1024 * 1024 * 1024, 90 * 1024 * 1024 * 1024, 80 * 1024 * 1024 * 1024, 2 * 1024 * 1024 * 1024},
+			[]Option{Height(5), Width(45), YAxisValueFormatter(func(v float64) string {
+				return fmt.Sprintf("%.2f Foo", v/1024/1024/1024)
+			})},
+			` 89.77 Foo ┤      ╭──────────────────────╮
+ 72.22 Foo ┼──────╯                      ╰──╮
+ 54.66 Foo ┤                                ╰───╮
+ 37.11 Foo ┤                                    ╰──╮
+ 19.55 Foo ┤                                       ╰──╮
+  2.00 Foo ┤                                          ╰─`,
+		},
 	}
 
 	for i := range cases {

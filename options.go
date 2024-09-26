@@ -62,7 +62,10 @@ type config struct {
 	SeriesLegends          []string
 	LineEnding             string
 	SeriesChars            []CharSet
+	YAxisValueFormatter    YAxisValueFormatterFunc
 }
+
+type YAxisValueFormatterFunc func(float64) string
 
 // An optionFunc applies an option.
 type optionFunc func(*config)
@@ -183,5 +186,12 @@ func LineEnding(ending string) Option {
 func SeriesChars(charSets ...CharSet) Option {
 	return optionFunc(func(c *config) {
 		c.SeriesChars = charSets
+	})
+}
+
+// YAxisValueFormatter formats values printed on the Y-axis.
+func YAxisValueFormatter(f YAxisValueFormatterFunc) Option {
+	return optionFunc(func(c *config) {
+		c.YAxisValueFormatter = f
 	})
 }
