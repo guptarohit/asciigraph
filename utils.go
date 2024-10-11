@@ -89,3 +89,17 @@ func init() {
 		}
 	}
 }
+
+func calculateHeight(interval float64) int {
+	if interval >= 1 {
+		return int(interval)
+	}
+
+	scaleFactor := math.Pow(10, math.Floor(math.Log10(interval)))
+	scaledDelta := interval / scaleFactor
+
+	if scaledDelta < 2 {
+		return int(math.Ceil(scaledDelta))
+	}
+	return int(math.Floor(scaledDelta))
+}
