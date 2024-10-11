@@ -48,12 +48,12 @@ func PlotMany(data [][]float64, options ...Option) string {
 
 	minimum, maximum := math.Inf(1), math.Inf(-1)
 	for i := range data {
-		min, max := minMaxFloat64Slice(data[i])
-		if min < minimum {
-			minimum = min
+		minVal, maxVal := minMaxFloat64Slice(data[i])
+		if minVal < minimum {
+			minimum = minVal
 		}
-		if max > maximum {
-			maximum = max
+		if maxVal > maximum {
+			maximum = maxVal
 		}
 	}
 	if config.LowerBound != nil && *config.LowerBound < minimum {
