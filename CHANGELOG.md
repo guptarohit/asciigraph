@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.3] - 2024-10-26
+
+### Fixed
+
+- Incorrect plot height calculation for small value ranges (#59)
+
 ## [0.7.2] - 2024-08-12
 
 ### Fixed
