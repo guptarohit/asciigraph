@@ -73,7 +73,8 @@ func UpperBound(max float64) Option {
 	return optionFunc(func(c *config) { c.UpperBound = &max })
 }
 
-// Offset sets the graphs offset.
+// Offset sets the graphs offset from the left-edge (default of 3).
+// A value < 3 will prevent the Y-Axis from being drawn.
 func Offset(o int) Option {
 	return optionFunc(func(c *config) { c.Offset = o })
 }
