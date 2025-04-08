@@ -68,9 +68,10 @@ func PlotMany(data [][]float64, options ...Option) string {
 		config.Height = calculateHeight(interval)
 	}
 
-	if config.Offset <= 0 {
-		config.Offset = 3
+	if config.Offset < 0 {
+		config.Offset = 0
 	}
+	haveYAxis := config.Offset >= 3
 
 	var ratio float64
 	if interval != 0 {
@@ -125,23 +126,25 @@ func PlotMany(data [][]float64, options ...Option) string {
 	minNumLength := len(fmt.Sprintf("%0.*f", precision, minimum))
 	maxWidth := int(math.Max(float64(maxNumLength), float64(minNumLength)))
 
-	// axis and labels
-	for y := intmin2; y < intmax2+1; y++ {
-		var magnitude float64
-		if rows > 0 {
-			magnitude = maximum - (float64(y-intmin2) * interval / float64(rows))
-		} else {
-			magnitude = float64(y)
+	if haveYAxis {
+		// axis and labels
+		for y := intmin2; y < intmax2+1; y++ {
+			var magnitude float64
+			if rows > 0 {
+				magnitude = maximum - (float64(y-intmin2) * interval / float64(rows))
+			} else {
+				magnitude = float64(y)
+			}
+
+			label := fmt.Sprintf("%*.*f", maxWidth+1, precision, magnitude)
+			w := y - intmin2
+			h := int(math.Max(float64(config.Offset)-float64(len(label)), 0))
+
+			plot[w][h].Text = label
+			plot[w][h].Color = config.LabelColor
+			plot[w][config.Offset-1].Text = "┤"
+			plot[w][config.Offset-1].Color = config.AxisColor
 		}
-
-		label := fmt.Sprintf("%*.*f", maxWidth+1, precision, magnitude)
-		w := y - intmin2
-		h := int(math.Max(float64(config.Offset)-float64(len(label)), 0))
-
-		plot[w][h].Text = label
-		plot[w][h].Color = config.LabelColor
-		plot[w][config.Offset-1].Text = "┤"
-		plot[w][config.Offset-1].Color = config.AxisColor
 	}
 
 	for i := range data {
@@ -154,7 +157,7 @@ func PlotMany(data [][]float64, options ...Option) string {
 
 		var y0, y1 int
 
-		if !math.IsNaN(series[0]) {
+		if !math.IsNaN(series[0]) && haveYAxis {
 			y0 = int(round(series[0]*ratio) - min2)
 			plot[rows-y0][config.Offset-1].Text = "┼" // first value
 			plot[rows-y0][config.Offset-1].Color = config.AxisColor
