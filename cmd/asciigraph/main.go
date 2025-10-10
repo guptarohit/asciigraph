@@ -126,7 +126,7 @@ func main() {
 		for i, point := range points {
 			p, err := strconv.ParseFloat(strings.TrimSpace(point), 64)
 			if err != nil {
-				log.Printf("ignore %q: cannot parse value", point)
+				fmt.Fprintf(os.Stderr, "ignore %q: cannot parse value\n", point)
 				p = math.NaN()
 			}
 			series[i] = append(series[i], p)
