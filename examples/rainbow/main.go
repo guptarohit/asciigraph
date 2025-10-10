@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/guptarohit/asciigraph"
+	"github.com/METR/asciigraph"
 )
 
 func main() {
