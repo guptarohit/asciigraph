@@ -105,21 +105,23 @@ func PlotMany(data [][]float64, options ...Option) string {
 	}
 
 	precision := config.Precision
-	logMaximum = math.Log10(math.Max(math.Abs(maximum), math.Abs(minimum))) //to find number of zeros after decimal
-	if minimum == float64(0) && maximum == float64(0) {
-		logMaximum = float64(-1)
-	}
-
-	if logMaximum < 0 {
-		// negative log
-		if math.Mod(logMaximum, 1) != 0 {
-			// non-zero digits after decimal
-			precision += uint(math.Abs(logMaximum))
-		} else {
-			precision += uint(math.Abs(logMaximum) - 1.0)
+	if precision == 0 {
+		logMaximum = math.Log10(math.Max(math.Abs(maximum), math.Abs(minimum))) //to find number of zeros after decimal
+		if minimum == float64(0) && maximum == float64(0) {
+			logMaximum = float64(-1)
 		}
-	} else if logMaximum > 2 {
-		precision = 0
+
+		if logMaximum < 0 {
+			// negative log
+			if math.Mod(logMaximum, 1) != 0 {
+				// non-zero digits after decimal
+				precision += uint(math.Abs(logMaximum))
+			} else {
+				precision += uint(math.Abs(logMaximum) - 1.0)
+			}
+		} else if logMaximum > 2 {
+			precision = 0
+		}
 	}
 
 	maxNumLength := len(fmt.Sprintf("%0.*f", precision, maximum))
