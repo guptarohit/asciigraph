@@ -4,6 +4,45 @@ import (
 	"strings"
 )
 
+// CharSet defines the characters used for plotting a series.
+type CharSet struct {
+	Horizontal      string // Horizontal line character (default: ─)
+	VerticalLine    string // Vertical line character (default: │)
+	CornerUpLeft    string // Corner character going up and left (default: ╭)
+	CornerUpRight   string // Corner character going up and right (default: ╮)
+	CornerDownLeft  string // Corner character going down and left (default: ╰)
+	CornerDownRight string // Corner character going down and right (default: ╯)
+	EndCap          string // End cap character (default: ╴)
+	StartCap        string // Start cap character (default: ╶)
+}
+
+// DefaultCharSet provides the default box-drawing characters.
+var DefaultCharSet = CharSet{
+	Horizontal:      "─",
+	VerticalLine:    "│",
+	CornerUpLeft:    "╭",
+	CornerUpRight:   "╮",
+	CornerDownLeft:  "╰",
+	CornerDownRight: "╯",
+	EndCap:          "╴",
+	StartCap:        "╶",
+}
+
+// CreateCharSet is a helper function that creates a CharSet with all fields set to the same character.
+// This is useful for simple uniform character sets like "*", "•", "#", etc.
+func CreateCharSet(char string) CharSet {
+	return CharSet{
+		Horizontal:      char,
+		VerticalLine:    char,
+		CornerUpLeft:    char,
+		CornerUpRight:   char,
+		CornerDownLeft:  char,
+		CornerDownRight: char,
+		EndCap:          char,
+		StartCap:        char,
+	}
+}
+
 // Option represents a configuration setting.
 type Option interface {
 	apply(c *config)
@@ -22,6 +61,7 @@ type config struct {
 	SeriesColors           []AnsiColor
 	SeriesLegends          []string
 	LineEnding             string
+	SeriesChars            []CharSet
 }
 
 // An optionFunc applies an option.
@@ -135,5 +175,13 @@ func SeriesLegends(text ...string) Option {
 func LineEnding(ending string) Option {
 	return optionFunc(func(c *config) {
 		c.LineEnding = ending
+	})
+}
+
+// SeriesChars sets the character sets for each series.
+// If fewer CharSets are provided than series, DefaultCharSet is used for remaining series.
+func SeriesChars(charSets ...CharSet) Option {
+	return optionFunc(func(c *config) {
+		c.SeriesChars = charSets
 	})
 }
