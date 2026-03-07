@@ -479,7 +479,6 @@ func TestLineEndingWithLegends(t *testing.T) {
 	}
 }
 
-
 func TestPrecisionRespectedForLargeNumbers(t *testing.T) {
 	data := [][]float64{{100.123456, 200.987654}}
 
@@ -525,5 +524,71 @@ func TestPrecisionDefaultAutoCalculation(t *testing.T) {
 	}
 	if !strings.Contains(large, "200") {
 		t.Errorf("large numbers should show without decimals by default, got: %s", large)
+	}
+}
+
+func TestCustomCharsAsterisk(t *testing.T) {
+	data := [][]float64{{1, 2, 3, 2, 1}}
+
+	actual := PlotMany(data, SeriesChars(CreateCharSet("*")))
+	expected := ` 3.00 ┤ **
+ 2.00 ┤****
+ 1.00 ┼*  *`
+	if actual != expected {
+		t.Errorf("got: %s, want: %s", actual, expected)
+	}
+}
+
+func TestCustomCharsDot(t *testing.T) {
+	data := [][]float64{{1, 2, 3, 2, 1}}
+
+	actual := PlotMany(data, SeriesChars(CreateCharSet("•")))
+	expected := ` 3.00 ┤ ••
+ 2.00 ┤••••
+ 1.00 ┼•  •`
+	if actual != expected {
+		t.Errorf("got: %s, want: %s", actual, expected)
+	}
+}
+
+func TestDefaultCharSet(t *testing.T) {
+	data := [][]float64{{1, 2, 2, 2, 3}}
+
+	actual := PlotMany(data)
+	expected := ` 3.00 ┤   ╭
+ 2.00 ┤╭──╯
+ 1.00 ┼╯`
+	if actual != expected {
+		t.Errorf("got: %s, want: %s", actual, expected)
+	}
+}
+
+func TestPartialCharSet(t *testing.T) {
+	data := [][]float64{{1, 2, 2, 2, 3}}
+
+	partialSet := CharSet{
+		Horizontal:   "=",
+		VerticalLine: "|",
+	}
+	actual := PlotMany(data, SeriesChars(partialSet))
+	expected := ` 3.00 ┤   ╭
+ 2.00 ┤╭==╯
+ 1.00 ┼╯`
+	if actual != expected {
+		t.Errorf("got: %s, want: %s", actual, expected)
+	}
+}
+
+func TestMultipleSeriesDifferentChars(t *testing.T) {
+	data := [][]float64{{1, 2, 3}, {3, 2, 1}}
+
+	actual := PlotMany(data,
+		SeriesChars(CreateCharSet("*"), CreateCharSet("#")),
+	)
+	expected := ` 3.00 ┼#*
+ 2.00 ┤##
+ 1.00 ┼*#`
+	if actual != expected {
+		t.Errorf("got: %s, want: %s", actual, expected)
 	}
 }
