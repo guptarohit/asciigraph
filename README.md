@@ -73,6 +73,49 @@ Running this example would render the following graph:
  0.00 ┼╯     ╰
 ```
 
+### Custom Y-axis value formatting
+
+Use `YAxisValueFormatter(...)` to control how values printed on the Y-axis are rendered.
+This is useful for human-readable units like bytes, durations, or domain-specific labels.
+
+```go
+package main
+
+import (
+	"fmt"
+
+	"github.com/guptarohit/asciigraph"
+)
+
+func main() {
+	data := []float64{
+		30 * 1024 * 1024 * 1024,
+		70 * 1024 * 1024 * 1024,
+		2 * 1024 * 1024 * 1024,
+	}
+
+	graph := asciigraph.Plot(data,
+		asciigraph.Height(5),
+		asciigraph.Width(45),
+		asciigraph.YAxisValueFormatter(func(v float64) string {
+			return fmt.Sprintf("%.2f GiB", v/1024/1024/1024)
+		}),
+	)
+
+	fmt.Println(graph)
+}
+```
+
+Running this example would render the following graph:
+```bash
+ 70.00 GiB ┤                 ╭──────╮
+ 56.40 GiB ┤         ╭───────╯      ╰────╮
+ 42.80 GiB ┤  ╭──────╯                   ╰───╮
+ 29.20 GiB ┼──╯                              ╰────╮
+ 15.60 GiB ┤                                      ╰───╮
+  2.00 GiB ┤                                          ╰─
+```
+
 ### Colored graphs
 
 ```go

@@ -13,6 +13,7 @@ func TestPlot(t *testing.T) {
 		opts     []Option
 		expected string
 	}{
+
 		{
 			[]float64{1, 1, 1, 1, 1},
 			nil,
@@ -310,6 +311,25 @@ func TestPlot(t *testing.T) {
  0.30 ┤╭╮╭
  0.20 ┼╯││
  0.10 ┤ ╰╯`},
+		{
+			[]float64{70 * 1024 * 1024 * 1024, 90 * 1024 * 1024 * 1024, 80 * 1024 * 1024 * 1024, 2 * 1024 * 1024 * 1024},
+			[]Option{Height(5), Width(45), YAxisValueFormatter(func(v float64) string {
+				return fmt.Sprintf("%.2f Foo", v/1024/1024/1024)
+			})},
+			` 89.77 Foo ┤      ╭──────────────────────╮
+ 72.22 Foo ┼──────╯                      ╰──╮
+ 54.66 Foo ┤                                ╰───╮
+ 37.11 Foo ┤                                    ╰──╮
+ 19.55 Foo ┤                                       ╰──╮
+  2.00 Foo ┤                                          ╰─`,
+		},
+		{
+			[]float64{49.51, 49.51, 49.51},
+			[]Option{Precision(1), YAxisValueFormatter(func(v float64) string {
+				return fmt.Sprintf("%.1f GiB", v)
+			})},
+			` 49.5 GiB ┼──`,
+		},
 	}
 
 	for i := range cases {
@@ -405,6 +425,15 @@ func TestPlotMany(t *testing.T) {
  0.00 ┼╯╰
 
        [0m■[0m First   [0m■[0m Second`},
+		{
+			[][]float64{{1, 2, 3}, {3, 2, 1}},
+			[]Option{YAxisValueFormatter(func(v float64) string {
+				return fmt.Sprintf("%.0fB", v)
+			})},
+			`
+ 3B ┼╮╭
+ 2B ┤╰╮
+ 1B ┼╯╰`},
 	}
 
 	for i := range cases {

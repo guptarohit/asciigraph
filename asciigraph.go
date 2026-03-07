@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"strings"
+	"unicode/utf8"
 )
 
 // Plot returns ascii graph for a series.
@@ -160,11 +161,14 @@ func PlotMany(data [][]float64, options ...Option) string {
 		precision = 0
 	}
 
-	maxNumLength := len(fmt.Sprintf("%0.*f", precision, maximum))
-	minNumLength := len(fmt.Sprintf("%0.*f", precision, minimum))
-	maxWidth := int(math.Max(float64(maxNumLength), float64(minNumLength)))
+	maxNumLength := utf8.RuneCountInString(fmt.Sprintf("%0.*f", precision, maximum))
+	minNumLength := utf8.RuneCountInString(fmt.Sprintf("%0.*f", precision, minimum))
+	magnitudes := make([]float64, 0, rows+1)
+	if config.YAxisValueFormatter != nil {
+		maxNumLength, minNumLength = 0, math.MaxInt64
+	}
 
-	// axis and labels
+	// calculate Y-axis values and the width when formatted using the YAxisValueFormatter
 	for y := intmin2; y < intmax2+1; y++ {
 		var magnitude float64
 		if rows > 0 && interval > 0 {
@@ -174,10 +178,32 @@ func PlotMany(data [][]float64, options ...Option) string {
 		} else {
 			magnitude = float64(y)
 		}
+		magnitudes = append(magnitudes, magnitude)
 
-		label := fmt.Sprintf("%*.*f", maxWidth+1, precision, magnitude)
-		w := y - intmin2
-		h := int(math.Max(float64(config.Offset)-float64(len(label)), 0))
+		if config.YAxisValueFormatter != nil {
+			l := utf8.RuneCountInString(config.YAxisValueFormatter(magnitude))
+			if l > maxNumLength {
+				maxNumLength = l
+			}
+			if l < minNumLength {
+				minNumLength = l
+			}
+		}
+	}
+	maxWidth := int(math.Max(float64(maxNumLength), float64(minNumLength)))
+	leftPad := config.Offset + maxWidth
+
+	// axis and labels reusing the previously calculated values
+	for w, magnitude := range magnitudes {
+		var label string
+		if config.YAxisValueFormatter == nil {
+			label = fmt.Sprintf("%*.*f", maxWidth+1, precision, magnitude)
+		} else {
+			val := config.YAxisValueFormatter(magnitude)
+			label = strings.Repeat(" ", maxWidth+1-utf8.RuneCountInString(val)) + val
+		}
+
+		h := int(math.Max(float64(config.Offset)-float64(utf8.RuneCountInString(label)), 0))
 
 		plot[w][h].Text = label
 		plot[w][h].Color = config.LabelColor
@@ -288,7 +314,7 @@ func PlotMany(data [][]float64, options ...Option) string {
 	// add caption if not empty
 	if config.Caption != "" {
 		lines.WriteString(config.LineEnding)
-		lines.WriteString(strings.Repeat(" ", config.Offset+maxWidth))
+		lines.WriteString(strings.Repeat(" ", leftPad))
 		if len(config.Caption) < lenMax {
 			lines.WriteString(strings.Repeat(" ", (lenMax-len(config.Caption))/2))
 		}
@@ -302,7 +328,7 @@ func PlotMany(data [][]float64, options ...Option) string {
 	}
 
 	if len(config.SeriesLegends) > 0 {
-		addLegends(&lines, config, lenMax, config.Offset+maxWidth)
+		addLegends(&lines, config, lenMax, leftPad)
 	}
 
 	return lines.String()
