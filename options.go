@@ -65,6 +65,7 @@ type config struct {
 	YAxisValueFormatter    YAxisValueFormatterFunc
 }
 
+// YAxisValueFormatterFunc formats a single Y-axis value.
 type YAxisValueFormatterFunc func(float64) string
 
 // An optionFunc applies an option.

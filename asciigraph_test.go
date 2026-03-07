@@ -310,7 +310,7 @@ func TestPlot(t *testing.T) {
 			`
  0.30 ┤╭╮╭
  0.20 ┼╯││
-	 0.10 ┤ ╰╯`},
+ 0.10 ┤ ╰╯`},
 		{
 			[]float64{70 * 1024 * 1024 * 1024, 90 * 1024 * 1024 * 1024, 80 * 1024 * 1024 * 1024, 2 * 1024 * 1024 * 1024},
 			[]Option{Height(5), Width(45), YAxisValueFormatter(func(v float64) string {
