@@ -22,6 +22,16 @@ func TestPlot(t *testing.T) {
 			nil,
 			` 0.00 ┼────`},
 		{
+			[]float64{49.51, 49.51, 49.51},
+			[]Option{Precision(2), Caption("Code Coverage (excluding generated)")},
+			`
+ 49.51 ┼──
+        Code Coverage (excluding generated)`},
+		{
+			[]float64{-49.51, -49.51, -49.51},
+			[]Option{Precision(2)},
+			` -49.51 ┼──`},
+		{
 			[]float64{2, 1, 1, 2, -2, 5, 7, 11, 3, 7, 1},
 			nil,
 			`
