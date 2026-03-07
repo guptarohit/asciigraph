@@ -29,7 +29,13 @@ func addLegends(lines *bytes.Buffer, config *config, lenMax int, leftPad int) {
 	var legendsTextLen int
 	rightPad := 3
 	for i, text := range config.SeriesLegends {
-		item, itemLen := createLegendItem(text, config.SeriesColors[i])
+		// Use default color if SeriesColors is not set or index is out of range
+		color := Default
+		if i < len(config.SeriesColors) {
+			color = config.SeriesColors[i]
+		}
+
+		item, itemLen := createLegendItem(text, color)
 		legendsText += item
 		legendsTextLen += itemLen
 
