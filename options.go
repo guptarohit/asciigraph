@@ -21,6 +21,7 @@ type config struct {
 	LabelColor             AnsiColor
 	SeriesColors           []AnsiColor
 	SeriesLegends          []string
+	LineEnding             string
 }
 
 // An optionFunc applies an option.
@@ -32,6 +33,9 @@ func (of optionFunc) apply(c *config) { of(c) }
 func configure(defaults config, options []Option) *config {
 	for _, o := range options {
 		o.apply(&defaults)
+	}
+	if defaults.LineEnding == "" {
+		defaults.LineEnding = "\n"
 	}
 	return &defaults
 }
@@ -122,5 +126,14 @@ func SeriesColors(ac ...AnsiColor) Option {
 func SeriesLegends(text ...string) Option {
 	return optionFunc(func(c *config) {
 		c.SeriesLegends = text
+	})
+}
+
+// LineEnding sets the line ending sequence. Use "\r\n" for raw terminals
+// (e.g., Windows terminals) or "\n" for standard Unix-style output.
+// Defaults to "\n".
+func LineEnding(ending string) Option {
+	return optionFunc(func(c *config) {
+		c.LineEnding = ending
 	})
 }

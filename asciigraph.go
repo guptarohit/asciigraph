@@ -16,8 +16,9 @@ func Plot(series []float64, options ...Option) string {
 func PlotMany(data [][]float64, options ...Option) string {
 	var logMaximum float64
 	config := configure(config{
-		Offset:    3,
-		Precision: 2,
+		Offset:     3,
+		Precision:  2,
+		LineEnding: "\n",
 	}, options)
 
 	// Create a deep copy of the input data
@@ -215,7 +216,7 @@ func PlotMany(data [][]float64, options ...Option) string {
 	var lines bytes.Buffer
 	for h, horizontal := range plot {
 		if h != 0 {
-			lines.WriteRune('\n')
+			lines.WriteString(config.LineEnding)
 		}
 
 		// remove trailing spaces
@@ -243,7 +244,7 @@ func PlotMany(data [][]float64, options ...Option) string {
 
 	// add caption if not empty
 	if config.Caption != "" {
-		lines.WriteRune('\n')
+		lines.WriteString(config.LineEnding)
 		lines.WriteString(strings.Repeat(" ", config.Offset+maxWidth))
 		if len(config.Caption) < lenMax {
 			lines.WriteString(strings.Repeat(" ", (lenMax-len(config.Caption))/2))
