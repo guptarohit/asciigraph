@@ -12,6 +12,40 @@ func Plot(series []float64, options ...Option) string {
 	return PlotMany([][]float64{series}, options...)
 }
 
+// getCharSet returns the CharSet for a given series index, falling back to DefaultCharSet.
+func getCharSet(config *config, seriesIndex int) CharSet {
+	if seriesIndex < len(config.SeriesChars) {
+		charSet := config.SeriesChars[seriesIndex]
+		// Fill in any empty fields with defaults
+		if charSet.Horizontal == "" {
+			charSet.Horizontal = DefaultCharSet.Horizontal
+		}
+		if charSet.VerticalLine == "" {
+			charSet.VerticalLine = DefaultCharSet.VerticalLine
+		}
+		if charSet.ArcDownRight == "" {
+			charSet.ArcDownRight = DefaultCharSet.ArcDownRight
+		}
+		if charSet.ArcDownLeft == "" {
+			charSet.ArcDownLeft = DefaultCharSet.ArcDownLeft
+		}
+		if charSet.ArcUpRight == "" {
+			charSet.ArcUpRight = DefaultCharSet.ArcUpRight
+		}
+		if charSet.ArcUpLeft == "" {
+			charSet.ArcUpLeft = DefaultCharSet.ArcUpLeft
+		}
+		if charSet.EndCap == "" {
+			charSet.EndCap = DefaultCharSet.EndCap
+		}
+		if charSet.StartCap == "" {
+			charSet.StartCap = DefaultCharSet.StartCap
+		}
+		return charSet
+	}
+	return DefaultCharSet
+}
+
 // PlotMany returns ascii graph for multiple series.
 func PlotMany(data [][]float64, options ...Option) string {
 	var logMaximum float64
@@ -157,6 +191,9 @@ func PlotMany(data [][]float64, options ...Option) string {
 			color = config.SeriesColors[i]
 		}
 
+		// Get the character set for this series
+		charSet := getCharSet(config, i)
+
 		var y0, y1 int
 
 		if !math.IsNaN(series[0]) {
@@ -175,14 +212,14 @@ func PlotMany(data [][]float64, options ...Option) string {
 
 			if math.IsNaN(d1) && !math.IsNaN(d0) {
 				y0 = int(round(d0*ratio) - float64(intmin2))
-				plot[rows-y0][x+config.Offset].Text = "╴"
+				plot[rows-y0][x+config.Offset].Text = charSet.EndCap
 				plot[rows-y0][x+config.Offset].Color = color
 				continue
 			}
 
 			if math.IsNaN(d0) && !math.IsNaN(d1) {
 				y1 = int(round(d1*ratio) - float64(intmin2))
-				plot[rows-y1][x+config.Offset].Text = "╶"
+				plot[rows-y1][x+config.Offset].Text = charSet.StartCap
 				plot[rows-y1][x+config.Offset].Color = color
 				continue
 			}
@@ -191,20 +228,20 @@ func PlotMany(data [][]float64, options ...Option) string {
 			y1 = int(round(d1*ratio) - float64(intmin2))
 
 			if y0 == y1 {
-				plot[rows-y0][x+config.Offset].Text = "─"
+				plot[rows-y0][x+config.Offset].Text = charSet.Horizontal
 			} else {
 				if y0 > y1 {
-					plot[rows-y1][x+config.Offset].Text = "╰"
-					plot[rows-y0][x+config.Offset].Text = "╮"
+					plot[rows-y1][x+config.Offset].Text = charSet.ArcUpRight
+					plot[rows-y0][x+config.Offset].Text = charSet.ArcDownLeft
 				} else {
-					plot[rows-y1][x+config.Offset].Text = "╭"
-					plot[rows-y0][x+config.Offset].Text = "╯"
+					plot[rows-y1][x+config.Offset].Text = charSet.ArcDownRight
+					plot[rows-y0][x+config.Offset].Text = charSet.ArcUpLeft
 				}
 
 				start := int(math.Min(float64(y0), float64(y1))) + 1
 				end := int(math.Max(float64(y0), float64(y1)))
 				for y := start; y < end; y++ {
-					plot[rows-y][x+config.Offset].Text = "│"
+					plot[rows-y][x+config.Offset].Text = charSet.VerticalLine
 				}
 			}
 

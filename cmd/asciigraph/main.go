@@ -33,6 +33,7 @@ var (
 	upperBound              = math.Inf(-1)
 	delimiter               = ","
 	seriesNum          uint = 1
+	customChar         string
 )
 
 func main() {
@@ -97,10 +98,21 @@ func main() {
 	flag.Float64Var(&upperBound, "ub", upperBound, "`upper bound` set the maximum value for the vertical axis (ignored if series contains larger values)")
 	flag.StringVar(&delimiter, "d", delimiter, "data `delimiter` for splitting data points in the input stream")
 	flag.UintVar(&seriesNum, "sn", seriesNum, "`number of series` (columns) in the input data")
+	flag.StringVar(&customChar, "x", customChar, "`character` to use for plotting (e.g., *, #, •). Use comma-separated for multiple series (e.g., \"*,#\")")
 
 	flag.Parse()
 
 	series := make([][]float64, seriesNum)
+
+	var seriesCharsOption asciigraph.Option
+	if customChar != "" {
+		chars := strings.Split(customChar, ",")
+		charSets := make([]asciigraph.CharSet, len(chars))
+		for i, c := range chars {
+			charSets[i] = asciigraph.CreateCharSet(strings.TrimSpace(c))
+		}
+		seriesCharsOption = asciigraph.SeriesChars(charSets...)
+	}
 
 	if enableRealTime && realTimeDataBuffer == 0 {
 		realTimeDataBuffer = int(width)
@@ -142,7 +154,7 @@ func main() {
 
 			if currentTime := time.Now(); currentTime.After(nextFlushTime) || currentTime.Equal(nextFlushTime) {
 				seriesCopy := append([][]float64(nil), series...)
-				plot := asciigraph.PlotMany(seriesCopy,
+				opts := []asciigraph.Option{
 					asciigraph.Height(int(height)),
 					asciigraph.Width(int(width)),
 					asciigraph.Offset(int(offset)),
@@ -155,7 +167,11 @@ func main() {
 					asciigraph.LabelColor(labelColor),
 					asciigraph.LowerBound(lowerBound),
 					asciigraph.UpperBound(upperBound),
-				)
+				}
+				if seriesCharsOption != nil {
+					opts = append(opts, seriesCharsOption)
+				}
+				plot := asciigraph.PlotMany(seriesCopy, opts...)
 				asciigraph.Clear()
 				fmt.Println(plot)
 				nextFlushTime = time.Now().Add(flushInterval)
@@ -171,7 +187,7 @@ func main() {
 			log.Fatal("no data")
 		}
 
-		plot := asciigraph.PlotMany(series,
+		opts := []asciigraph.Option{
 			asciigraph.Height(int(height)),
 			asciigraph.Width(int(width)),
 			asciigraph.Offset(int(offset)),
@@ -184,7 +200,11 @@ func main() {
 			asciigraph.LabelColor(labelColor),
 			asciigraph.LowerBound(lowerBound),
 			asciigraph.UpperBound(upperBound),
-		)
+		}
+		if seriesCharsOption != nil {
+			opts = append(opts, seriesCharsOption)
+		}
+		plot := asciigraph.PlotMany(series, opts...)
 
 		fmt.Println(plot)
 	}
