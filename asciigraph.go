@@ -167,8 +167,10 @@ func PlotMany(data [][]float64, options ...Option) string {
 	// axis and labels
 	for y := intmin2; y < intmax2+1; y++ {
 		var magnitude float64
-		if rows > 0 {
+		if rows > 0 && interval > 0 {
 			magnitude = maximum - (float64(y-intmin2) * interval / float64(rows))
+		} else if interval == 0 {
+			magnitude = minimum
 		} else {
 			magnitude = float64(y)
 		}
