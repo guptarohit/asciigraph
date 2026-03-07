@@ -15,7 +15,7 @@ type config struct {
 	LowerBound, UpperBound *float64
 	Offset                 int
 	Caption                string
-	Precision              uint
+	Precision              *uint
 	CaptionColor           AnsiColor
 	AxisColor              AnsiColor
 	LabelColor             AnsiColor
@@ -84,7 +84,7 @@ func Offset(o int) Option {
 
 // Precision sets the graphs precision.
 func Precision(p uint) Option {
-	return optionFunc(func(c *config) { c.Precision = p })
+	return optionFunc(func(c *config) { c.Precision = &p })
 }
 
 // Caption sets the graphs caption.

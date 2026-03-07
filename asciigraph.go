@@ -17,7 +17,7 @@ func PlotMany(data [][]float64, options ...Option) string {
 	var logMaximum float64
 	config := configure(config{
 		Offset:     3,
-		Precision:  2,
+		Precision:  nil,
 		LineEnding: "\n",
 	}, options)
 
@@ -104,7 +104,11 @@ func PlotMany(data [][]float64, options ...Option) string {
 		plot[i] = line
 	}
 
-	precision := config.Precision
+	var precision uint = 2 //Default precision to maintain backwards compatibility
+	if config.Precision != nil {
+		precision = *config.Precision
+	}
+
 	logMaximum = math.Log10(math.Max(math.Abs(maximum), math.Abs(minimum))) //to find number of zeros after decimal
 	if minimum == float64(0) && maximum == float64(0) {
 		logMaximum = float64(-1)
@@ -118,7 +122,7 @@ func PlotMany(data [][]float64, options ...Option) string {
 		} else {
 			precision += uint(math.Abs(logMaximum) - 1.0)
 		}
-	} else if logMaximum > 2 {
+	} else if logMaximum > 2 && config.Precision == nil {
 		precision = 0
 	}
 

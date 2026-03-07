@@ -478,3 +478,52 @@ func TestLineEndingWithLegends(t *testing.T) {
 		t.Errorf("should use CRLF, got: %q", actualCRLF)
 	}
 }
+
+
+func TestPrecisionRespectedForLargeNumbers(t *testing.T) {
+	data := [][]float64{{100.123456, 200.987654}}
+
+	actual := PlotMany(data, Precision(3))
+	if !strings.Contains(actual, "100.123 ") {
+		t.Errorf("precision(3) should show 100.123, got: %s", actual)
+	}
+	if !strings.Contains(actual, "200.988 ") {
+		t.Errorf("precision(3) should show 200.988, got: %s", actual)
+	}
+}
+
+func TestPrecisionZeroWithLargeNumbers(t *testing.T) {
+	data := [][]float64{{150.5, 200.9}}
+
+	actual := PlotMany(data, Precision(0))
+	if !strings.Contains(actual, "201 ") || strings.Contains(actual, ".") {
+		t.Errorf("precision(0) should show integers without decimal, got: %s", actual)
+	}
+}
+
+func TestPlotPrecisionWithLargeNumbers(t *testing.T) {
+	data := []float64{100.123, 200.456, 150.789}
+
+	actual := Plot(data, Precision(2))
+	if !strings.Contains(actual, "100.12 ") {
+		t.Errorf("precision(2) should show 100.12, got: %s", actual)
+	}
+	if !strings.Contains(actual, "200.46 ") {
+		t.Errorf("precision(2) should show 200.46, got: %s", actual)
+	}
+}
+
+func TestPrecisionDefaultAutoCalculation(t *testing.T) {
+	dataSmall := [][]float64{{0.1, 0.2}}
+	dataLarge := [][]float64{{100, 200}}
+
+	small := PlotMany(dataSmall)
+	large := PlotMany(dataLarge)
+
+	if !strings.Contains(small, "0.") {
+		t.Errorf("small numbers should auto-calculate precision, got: %s", small)
+	}
+	if !strings.Contains(large, "200") {
+		t.Errorf("large numbers should show without decimals by default, got: %s", large)
+	}
+}
