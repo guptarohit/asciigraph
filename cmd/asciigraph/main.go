@@ -33,6 +33,7 @@ var (
 	upperBound              = math.Inf(-1)
 	delimiter               = ","
 	seriesNum          uint = 1
+	customChar         string
 )
 
 func main() {
@@ -97,6 +98,7 @@ func main() {
 	flag.Float64Var(&upperBound, "ub", upperBound, "`upper bound` set the maximum value for the vertical axis (ignored if series contains larger values)")
 	flag.StringVar(&delimiter, "d", delimiter, "data `delimiter` for splitting data points in the input stream")
 	flag.UintVar(&seriesNum, "sn", seriesNum, "`number of series` (columns) in the input data")
+	flag.StringVar(&customChar, "x", customChar, "`character` to use for plotting (e.g., *, #, •)")
 
 	flag.Parse()
 
@@ -142,7 +144,7 @@ func main() {
 
 			if currentTime := time.Now(); currentTime.After(nextFlushTime) || currentTime.Equal(nextFlushTime) {
 				seriesCopy := append([][]float64(nil), series...)
-				plot := asciigraph.PlotMany(seriesCopy,
+				opts := []asciigraph.Option{
 					asciigraph.Height(int(height)),
 					asciigraph.Width(int(width)),
 					asciigraph.Offset(int(offset)),
@@ -155,7 +157,11 @@ func main() {
 					asciigraph.LabelColor(labelColor),
 					asciigraph.LowerBound(lowerBound),
 					asciigraph.UpperBound(upperBound),
-				)
+				}
+				if customChar != "" {
+					opts = append(opts, asciigraph.SeriesChars(asciigraph.CreateCharSet(customChar)))
+				}
+				plot := asciigraph.PlotMany(seriesCopy, opts...)
 				asciigraph.Clear()
 				fmt.Println(plot)
 				nextFlushTime = time.Now().Add(flushInterval)
@@ -171,7 +177,7 @@ func main() {
 			log.Fatal("no data")
 		}
 
-		plot := asciigraph.PlotMany(series,
+		opts := []asciigraph.Option{
 			asciigraph.Height(int(height)),
 			asciigraph.Width(int(width)),
 			asciigraph.Offset(int(offset)),
@@ -184,7 +190,11 @@ func main() {
 			asciigraph.LabelColor(labelColor),
 			asciigraph.LowerBound(lowerBound),
 			asciigraph.UpperBound(upperBound),
-		)
+		}
+		if customChar != "" {
+			opts = append(opts, asciigraph.SeriesChars(asciigraph.CreateCharSet(customChar)))
+		}
+		plot := asciigraph.PlotMany(series, opts...)
 
 		fmt.Println(plot)
 	}
