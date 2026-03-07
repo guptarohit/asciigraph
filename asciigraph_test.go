@@ -421,3 +421,60 @@ func BenchmarkPlotMany(b *testing.B) {
 		PlotMany(datasets, opts...)
 	}
 }
+
+func TestLineEnding(t *testing.T) {
+	data := []float64{2, 1, 1, 2, -2, 5, 7, 11, 3, 7, 1}
+
+	actualDefault := Plot(data)
+	if !strings.Contains(actualDefault, "\n") {
+		t.Errorf("default should use newline, got: %q", actualDefault)
+	}
+
+	actualCRLF := Plot(data, LineEnding("\r\n"))
+	if !strings.Contains(actualCRLF, "\r\n") {
+		t.Errorf("should use CRLF, got: %q", actualCRLF)
+	}
+	if strings.Contains(actualCRLF, "\n") && !strings.Contains(actualCRLF, "\r\n") {
+		t.Errorf("should not contain standalone newline")
+	}
+}
+
+func TestLineEndingPlotMany(t *testing.T) {
+	data := [][]float64{{0, 1, 2}, {2, 1, 0}}
+
+	actualDefault := PlotMany(data)
+	if !strings.Contains(actualDefault, "\n") {
+		t.Errorf("default should use newline, got: %q", actualDefault)
+	}
+
+	actualCRLF := PlotMany(data, LineEnding("\r\n"))
+	if !strings.Contains(actualCRLF, "\r\n") {
+		t.Errorf("should use CRLF, got: %q", actualCRLF)
+	}
+	if strings.Contains(actualCRLF, "\n") && !strings.Contains(actualCRLF, "\r\n") {
+		t.Errorf("should not contain standalone newline")
+	}
+}
+
+func TestLineEndingWithCaption(t *testing.T) {
+	data := []float64{1, 2, 3}
+
+	actualCRLF := Plot(data, Caption("test"), LineEnding("\r\n"))
+	if !strings.Contains(actualCRLF, "\r\n") {
+		t.Errorf("should use CRLF, got: %q", actualCRLF)
+	}
+}
+
+func TestLineEndingWithLegends(t *testing.T) {
+	data := [][]float64{{0, 1, 0}, {2, 3, 4, 3, 2}}
+
+	actualDefault := PlotMany(data, SeriesColors(Red, Blue), SeriesLegends("A", "B"))
+	if !strings.Contains(actualDefault, "\n") {
+		t.Errorf("default should use newline, got: %q", actualDefault)
+	}
+
+	actualCRLF := PlotMany(data, SeriesColors(Red, Blue), SeriesLegends("A", "B"), LineEnding("\r\n"))
+	if !strings.Contains(actualCRLF, "\r\n") {
+		t.Errorf("should use CRLF, got: %q", actualCRLF)
+	}
+}
