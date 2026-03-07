@@ -6,40 +6,40 @@ import (
 
 // CharSet defines the characters used for plotting a series.
 type CharSet struct {
-	Horizontal      string // Horizontal line character (default: ─)
-	VerticalLine    string // Vertical line character (default: │)
-	CornerUpLeft    string // Corner character going up and left (default: ╭)
-	CornerUpRight   string // Corner character going up and right (default: ╮)
-	CornerDownLeft  string // Corner character going down and left (default: ╰)
-	CornerDownRight string // Corner character going down and right (default: ╯)
-	EndCap          string // End cap character (default: ╴)
-	StartCap        string // Start cap character (default: ╶)
+	Horizontal   string // Horizontal line character (default: ─)
+	VerticalLine string // Vertical line character (default: │)
+	ArcDownRight string // Arc character going down and right (default: ╭)
+	ArcDownLeft  string // Arc character going down and left (default: ╮)
+	ArcUpRight   string // Arc character going up and right (default: ╰)
+	ArcUpLeft    string // Arc character going up and left (default: ╯)
+	EndCap       string // End cap character (default: ╴)
+	StartCap     string // Start cap character (default: ╶)
 }
 
 // DefaultCharSet provides the default box-drawing characters.
 var DefaultCharSet = CharSet{
-	Horizontal:      "─",
-	VerticalLine:    "│",
-	CornerUpLeft:    "╭",
-	CornerUpRight:   "╮",
-	CornerDownLeft:  "╰",
-	CornerDownRight: "╯",
-	EndCap:          "╴",
-	StartCap:        "╶",
+	Horizontal:   "─",
+	VerticalLine: "│",
+	ArcDownRight: "╭",
+	ArcDownLeft:  "╮",
+	ArcUpRight:   "╰",
+	ArcUpLeft:    "╯",
+	EndCap:       "╴",
+	StartCap:     "╶",
 }
 
 // CreateCharSet is a helper function that creates a CharSet with all fields set to the same character.
 // This is useful for simple uniform character sets like "*", "•", "#", etc.
 func CreateCharSet(char string) CharSet {
 	return CharSet{
-		Horizontal:      char,
-		VerticalLine:    char,
-		CornerUpLeft:    char,
-		CornerUpRight:   char,
-		CornerDownLeft:  char,
-		CornerDownRight: char,
-		EndCap:          char,
-		StartCap:        char,
+		Horizontal:   char,
+		VerticalLine: char,
+		ArcDownRight: char,
+		ArcDownLeft:  char,
+		ArcUpRight:   char,
+		ArcUpLeft:    char,
+		EndCap:       char,
+		StartCap:     char,
 	}
 }
 

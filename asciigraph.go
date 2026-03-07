@@ -23,17 +23,17 @@ func getCharSet(config *config, seriesIndex int) CharSet {
 		if charSet.VerticalLine == "" {
 			charSet.VerticalLine = DefaultCharSet.VerticalLine
 		}
-		if charSet.CornerUpLeft == "" {
-			charSet.CornerUpLeft = DefaultCharSet.CornerUpLeft
+		if charSet.ArcDownRight == "" {
+			charSet.ArcDownRight = DefaultCharSet.ArcDownRight
 		}
-		if charSet.CornerUpRight == "" {
-			charSet.CornerUpRight = DefaultCharSet.CornerUpRight
+		if charSet.ArcDownLeft == "" {
+			charSet.ArcDownLeft = DefaultCharSet.ArcDownLeft
 		}
-		if charSet.CornerDownLeft == "" {
-			charSet.CornerDownLeft = DefaultCharSet.CornerDownLeft
+		if charSet.ArcUpRight == "" {
+			charSet.ArcUpRight = DefaultCharSet.ArcUpRight
 		}
-		if charSet.CornerDownRight == "" {
-			charSet.CornerDownRight = DefaultCharSet.CornerDownRight
+		if charSet.ArcUpLeft == "" {
+			charSet.ArcUpLeft = DefaultCharSet.ArcUpLeft
 		}
 		if charSet.EndCap == "" {
 			charSet.EndCap = DefaultCharSet.EndCap
@@ -231,11 +231,11 @@ func PlotMany(data [][]float64, options ...Option) string {
 				plot[rows-y0][x+config.Offset].Text = charSet.Horizontal
 			} else {
 				if y0 > y1 {
-					plot[rows-y1][x+config.Offset].Text = charSet.CornerDownLeft
-					plot[rows-y0][x+config.Offset].Text = charSet.CornerUpRight
+					plot[rows-y1][x+config.Offset].Text = charSet.ArcUpRight
+					plot[rows-y0][x+config.Offset].Text = charSet.ArcDownLeft
 				} else {
-					plot[rows-y1][x+config.Offset].Text = charSet.CornerUpLeft
-					plot[rows-y0][x+config.Offset].Text = charSet.CornerDownRight
+					plot[rows-y1][x+config.Offset].Text = charSet.ArcDownRight
+					plot[rows-y0][x+config.Offset].Text = charSet.ArcUpLeft
 				}
 
 				start := int(math.Min(float64(y0), float64(y1))) + 1

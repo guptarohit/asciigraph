@@ -90,14 +90,14 @@ func main() {
 	fmt.Println("Example 6: Simple ASCII-only characters")
 	fmt.Println("========================================")
 	asciiSet := asciigraph.CharSet{
-		Horizontal:      "-",
-		VerticalLine:    "|",
-		CornerUpLeft:    "/",
-		CornerUpRight:   "\\",
-		CornerDownLeft:  "\\",
-		CornerDownRight: "/",
-		EndCap:          "-",
-		StartCap:        "-",
+		Horizontal:   "-",
+		VerticalLine: "|",
+		ArcDownRight: "/",
+		ArcDownLeft:  "\\",
+		ArcUpRight:   "\\",
+		ArcUpLeft:    "/",
+		EndCap:       "-",
+		StartCap:     "-",
 	}
 	graph6 := asciigraph.PlotMany([][]float64{data1},
 		asciigraph.Height(10),
