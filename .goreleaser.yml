@@ -51,9 +51,9 @@ release:
   github:
     owner: guptarohit
     name: asciigraph
-  # If set to true, will not auto-publish the release.
-  # Default is false.
-  draft: true
+  draft: false
+  mode: keep-existing
+  replace_existing_artifacts: true
 dockers:
   - image_templates:
       - 'ghcr.io/guptarohit/asciigraph:{{ .Version }}'
