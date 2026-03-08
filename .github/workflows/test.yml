@@ -30,6 +30,17 @@ jobs:
           version: "v2.14.1"
           args: check
 
+  compile-32bit:
+    name: compile (32-bit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+      - name: Build for linux/arm (32-bit)
+        run: GOARCH=arm GOOS=linux go build ./...
+
   test:
     strategy:
       matrix:
