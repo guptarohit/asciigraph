@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.1](https://github.com/guptarohit/asciigraph/compare/v0.8.0...v0.8.1) (2026-03-08)
+
+
+### Fixed
+
+* 32-bit compile overflow and release workflow cleanup ([451bece](https://github.com/guptarohit/asciigraph/commit/451becef290c1c8e1d114d73cbe60a05fb5e7c0c))
+* 32-bit compile overflow and release workflow cleanup ([#74](https://github.com/guptarohit/asciigraph/issues/74)) ([7f76123](https://github.com/guptarohit/asciigraph/commit/7f7612366a79f8ef909c872dcb5df677cf4a9fbb))
+
+
+### Changed
+
+* **axis:** remove minNumLength sentinel from formatter path ([8a81a67](https://github.com/guptarohit/asciigraph/commit/8a81a6718d59db385822e454ecc2e5a387011845))
+
 ## [0.8.0] - (2026-03-08)
 
 
