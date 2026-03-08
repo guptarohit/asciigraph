@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.0] - (2026-03-08)
+
+
+### Added
+
+* Option to format Y-axis values with `YAxisValueFormatter(...)` ([#58](https://github.com/guptarohit/asciigraph/pull/58))
+* Option to customize plot characters with `SeriesChars(...)` and `CreateCharSet(...)` ([#70](https://github.com/guptarohit/asciigraph/pull/70))
+* CLI: `-x` flag to specify custom characters, including comma-separated values for multiple series ([#70](https://github.com/guptarohit/asciigraph/pull/70))
+* Option to configure line endings for raw terminals ([#71](https://github.com/guptarohit/asciigraph/pull/71))
+
+
+### Fixed
+
+* Respect caller-specified precision for large numbers ([#69](https://github.com/guptarohit/asciigraph/pull/69))
+* Preserve exact Y-axis values for series with identical data points ([#65](https://github.com/guptarohit/asciigraph/pull/65)), closes [#61](https://github.com/guptarohit/asciigraph/issues/61)
+* Prevent panics when legends are set without series colors ([#64](https://github.com/guptarohit/asciigraph/pull/64))
+
+### Changed
+
+* Automates the release flow, update goreleaser config for v2 ([#72](https://github.com/guptarohit/asciigraph/pull/72))
+
 ## [0.7.3] - 2024-10-26
 
 ### Fixed
@@ -99,6 +120,8 @@ All notable changes to this project will be documented in this file.
 - Prevent panics when data is flat. (#8)
 - Prevent BADPREC issue when maximum and minimum values in a series are 0. (#10)
 
+[0.8.0]: https://github.com/guptarohit/asciigraph/releases/tag/v0.8.0
+[0.7.3]: https://github.com/guptarohit/asciigraph/releases/tag/v0.7.3
 [0.7.2]: https://github.com/guptarohit/asciigraph/releases/tag/v0.7.2
 [0.7.1]: https://github.com/guptarohit/asciigraph/releases/tag/v0.7.1
 [0.7.0]: https://github.com/guptarohit/asciigraph/releases/tag/v0.7.0
