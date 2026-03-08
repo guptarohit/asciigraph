@@ -1,3 +1,5 @@
+version: 2
+
 # Build customization
 builds:
   - env:
@@ -20,13 +22,16 @@ builds:
     ignore:
       - goos: darwin
         goarch: 386
+      - goos: windows
+        goarch: arm
 checksum:
   name_template: '{{ .ProjectName }}_{{ .Version }}_sha512-checksums.txt'
   algorithm: sha512
 # Archive customization
 archives:
   - id: tar
-    format: tar.gz
+    formats:
+      - tar.gz
     files:
       - LICENSE
       - README.md
@@ -40,7 +45,8 @@ archives:
       {{- if .Arm }}v{{ .Arm }}{{ end -}}
     format_overrides:
       - goos: windows
-        format: zip
+        formats:
+          - zip
 changelog:
   sort: asc
   filters:
@@ -54,21 +60,26 @@ release:
   draft: false
   mode: keep-existing
   replace_existing_artifacts: true
-dockers:
-  - image_templates:
-      - 'ghcr.io/guptarohit/asciigraph:{{ .Version }}'
-      - 'ghcr.io/guptarohit/asciigraph:{{ .Tag }}'
-      - 'ghcr.io/guptarohit/asciigraph:v{{ .Major }}'
-      - 'ghcr.io/guptarohit/asciigraph:v{{ .Major }}.{{ .Minor }}'
-      - 'ghcr.io/guptarohit/asciigraph:latest'
+dockers_v2:
+  - images:
+      - 'ghcr.io/guptarohit/asciigraph'
+    tags:
+      - '{{ .Version }}'
+      - '{{ .Tag }}'
+      - 'v{{ .Major }}'
+      - 'v{{ .Major }}.{{ .Minor }}'
+      - 'latest'
     dockerfile: goreleaser.dockerfile
-    build_flag_templates:
-      - '--label=org.opencontainers.image.title={{ .ProjectName }}'
-      - '--label=org.opencontainers.image.name={{ .ProjectName }}'
-      - '--label=org.opencontainers.image.description=Go package to make lightweight line graphs ╭┈╯ in CLI'
-      - '--label=org.opencontainers.image.url=https://github.com/guptarohit/asciigraph'
-      - '--label=org.opencontainers.image.source=https://github.com/guptarohit/asciigraph'
-      - '--label=org.opencontainers.image.version={{ .Version }}'
-      - '--label=org.opencontainers.image.created={{ .Date }}'
-      - '--label=org.opencontainers.image.revision={{ .FullCommit }}'
-      - '--label=org.opencontainers.image.licenses=BSD-3-Clause'
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    labels:
+      org.opencontainers.image.title: '{{ .ProjectName }}'
+      org.opencontainers.image.name: '{{ .ProjectName }}'
+      org.opencontainers.image.description: 'Go package to make lightweight line graphs ╭┈╯ in CLI'
+      org.opencontainers.image.url: 'https://github.com/guptarohit/asciigraph'
+      org.opencontainers.image.source: 'https://github.com/guptarohit/asciigraph'
+      org.opencontainers.image.version: '{{ .Version }}'
+      org.opencontainers.image.created: '{{ .Date }}'
+      org.opencontainers.image.revision: '{{ .FullCommit }}'
+      org.opencontainers.image.licenses: 'BSD-3-Clause'

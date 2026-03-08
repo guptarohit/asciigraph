@@ -62,7 +62,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v5
         with:
           distribution: goreleaser
-          version: "~> v2"
+          version: "v2.14.1"
           args: release --clean --release-notes=.release-notes.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

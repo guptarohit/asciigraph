@@ -1,3 +1,4 @@
 FROM scratch
-COPY asciigraph /asciigraph
+ARG TARGETPLATFORM
+COPY $TARGETPLATFORM/asciigraph /asciigraph
 ENTRYPOINT ["/asciigraph"]
