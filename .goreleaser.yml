@@ -73,6 +73,10 @@ dockers_v2:
     platforms:
       - linux/amd64
       - linux/arm64
+    build_args:
+      VERSION: '{{ .Version }}'
+      COMMIT: '{{ .FullCommit }}'
+      DATE: '{{ .Date }}'
     labels:
       org.opencontainers.image.title: '{{ .ProjectName }}'
       org.opencontainers.image.name: '{{ .ProjectName }}'
