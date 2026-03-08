@@ -165,7 +165,7 @@ func PlotMany(data [][]float64, options ...Option) string {
 	minNumLength := utf8.RuneCountInString(fmt.Sprintf("%0.*f", precision, minimum))
 	magnitudes := make([]float64, 0, rows+1)
 	if config.YAxisValueFormatter != nil {
-		maxNumLength, minNumLength = 0, math.MaxInt64
+		maxNumLength = 0
 	}
 
 	// calculate Y-axis values and the width when formatted using the YAxisValueFormatter
@@ -185,12 +185,14 @@ func PlotMany(data [][]float64, options ...Option) string {
 			if l > maxNumLength {
 				maxNumLength = l
 			}
-			if l < minNumLength {
-				minNumLength = l
-			}
 		}
 	}
-	maxWidth := int(math.Max(float64(maxNumLength), float64(minNumLength)))
+	var maxWidth int
+	if config.YAxisValueFormatter != nil {
+		maxWidth = maxNumLength
+	} else {
+		maxWidth = int(math.Max(float64(maxNumLength), float64(minNumLength)))
+	}
 	leftPad := config.Offset + maxWidth
 
 	// axis and labels reusing the previously calculated values

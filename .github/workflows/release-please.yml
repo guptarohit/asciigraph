@@ -34,11 +34,6 @@ jobs:
       - name: Fetch tags
         if: ${{ steps.release.outputs.release_created }}
         run: git fetch --force --tags origin
-      - name: Write release notes
-        if: ${{ steps.release.outputs.release_created }}
-        env:
-          RELEASE_NOTES: ${{ steps.release.outputs.body }}
-        run: printf '%s' "$RELEASE_NOTES" > .release-notes.md
       - name: Setup Go
         if: ${{ steps.release.outputs.release_created }}
         uses: actions/setup-go@v5
@@ -63,6 +58,6 @@ jobs:
         with:
           distribution: goreleaser
           version: "v2.14.1"
-          args: release --clean --release-notes=.release-notes.md
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
