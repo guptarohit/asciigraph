@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.2](https://github.com/guptarohit/asciigraph/compare/v0.8.1...v0.8.2) (2026-03-13)
+
+
+### Fixed
+
+* **docker:** add OCI labels to Dockerfile for ghcr.io metadata ([f83d907](https://github.com/guptarohit/asciigraph/commit/f83d9079b0aaac59b9bd15abe4a8cb26fcde9dbe))
+* **docker:** add OCI labels to Dockerfile for ghcr.io metadata ([#76](https://github.com/guptarohit/asciigraph/issues/76)) ([02f3e4a](https://github.com/guptarohit/asciigraph/commit/02f3e4a0f5136d710be39c407f77cfffc384821b))
+
 ## [0.8.1](https://github.com/guptarohit/asciigraph/compare/v0.8.0...v0.8.1) (2026-03-08)
 
 
