@@ -330,6 +330,62 @@ func TestPlot(t *testing.T) {
 			})},
 			` 49.5 GiB ┼──`,
 		},
+
+		// X-axis: basic with 2 ticks
+		{
+			[]float64{1, 1, 1, 1, 1},
+			[]Option{XAxisRange(0, 100), XAxisTickCount(2)},
+			`
+ 1.00 ┼────
+      └┬───┬
+       0  100`,
+		},
+
+		// X-axis: 3 ticks on larger data
+		{
+			[]float64{2, 1, 1, 2, -2, 5, 7, 11, 3, 7, 1},
+			[]Option{XAxisRange(0, 100), XAxisTickCount(3)},
+			`
+ 11.00 ┤      ╭╮
+ 10.00 ┤      ││
+  9.00 ┤      ││
+  8.00 ┤      ││
+  7.00 ┤     ╭╯│╭╮
+  6.00 ┤     │ │││
+  5.00 ┤    ╭╯ │││
+  4.00 ┤    │  │││
+  3.00 ┤    │  ╰╯│
+  2.00 ┼╮ ╭╮│    │
+  1.00 ┤╰─╯││    ╰
+  0.00 ┤   ││
+ -1.00 ┤   ││
+ -2.00 ┤   ╰╯
+       └┬────┬────┬
+        0   50   100`,
+		},
+
+		// X-axis: custom formatter
+		{
+			[]float64{1, 1, 1, 1, 1},
+			[]Option{XAxisRange(0, 100), XAxisTickCount(2), XAxisValueFormatter(func(v float64) string {
+				return fmt.Sprintf("%.0fms", v)
+			})},
+			`
+ 1.00 ┼────
+      └┬───┬
+      0ms`,
+		},
+
+		// X-axis + caption
+		{
+			[]float64{1, 1, 1, 1, 1},
+			[]Option{XAxisRange(0, 100), XAxisTickCount(2), Caption("test caption")},
+			`
+ 1.00 ┼────
+      └┬───┬
+       0  100
+       test caption`,
+		},
 	}
 
 	for i := range cases {
@@ -434,6 +490,54 @@ func TestPlotMany(t *testing.T) {
  3B ┼╮╭
  2B ┤╰╮
  1B ┼╯╰`},
+
+		// Two series + XAxisRange + XAxisTickCount(2)
+		{
+			[][]float64{{1, 2, 3}, {3, 2, 1}},
+			[]Option{XAxisRange(0, 100), XAxisTickCount(2)},
+			`
+ 3.00 ┼╮╭
+ 2.00 ┤╰╮
+ 1.00 ┼╯╰
+      └┬─┬
+       0`},
+
+		// Multi-series + X-axis + caption
+		{
+			[][]float64{{1, 2, 3}, {3, 2, 1}},
+			[]Option{XAxisRange(0, 50), XAxisTickCount(2), Caption("multi caption")},
+			`
+ 3.00 ┼╮╭
+ 2.00 ┤╰╮
+ 1.00 ┼╯╰
+      └┬─┬
+       0
+       multi caption`},
+
+		// Multi-series + X-axis + legends
+		{
+			[][]float64{{1, 2, 3}, {3, 2, 1}},
+			[]Option{XAxisRange(0, 10), XAxisTickCount(2), SeriesLegends("Up", "Down")},
+			`
+ 3.00 ┼╮╭
+ 2.00 ┤╰╮
+ 1.00 ┼╯╰
+      └┬─┬
+       0
+` + "\n" + `       ` + "\x1b[0m" + `■` + "\x1b[0m" + ` Up   ` + "\x1b[0m" + `■` + "\x1b[0m" + ` Down`},
+
+		// Multi-series + Width interpolation + X-axis
+		{
+			[][]float64{{1, 5}, {5, 1}},
+			[]Option{Width(10), XAxisRange(0, 100), XAxisTickCount(3)},
+			`
+ 5.00 ┼─╮     ╭─
+ 4.00 ┤ ╰─╮ ╭─╯
+ 3.00 ┤   ╰─╮
+ 2.00 ┤ ╭─╯ ╰─╮
+ 1.00 ┼─╯     ╰─
+      └┬───┬────┬
+       0       100`},
 	}
 
 	for i := range cases {
@@ -640,5 +744,93 @@ func TestMultipleSeriesDifferentChars(t *testing.T) {
  1.00 ┼*#`
 	if actual != expected {
 		t.Errorf("got: %s, want: %s", actual, expected)
+	}
+}
+
+func TestXAxis(t *testing.T) {
+	cases := []struct {
+		name     string
+		data     [][]float64
+		opts     []Option
+		expected string
+	}{
+		{
+			"single data point",
+			[][]float64{{5}},
+			[]Option{XAxisRange(0, 10)},
+			`
+ 5.00 ┼
+      └┬
+       0`,
+		},
+		{
+			"xMin equals xMax",
+			[][]float64{{1, 2, 3}},
+			[]Option{XAxisRange(5, 5), XAxisTickCount(3)},
+			`
+ 3.00 ┤ ╭
+ 2.00 ┤╭╯
+ 1.00 ┼╯
+      └┬┬┬
+       5 5`,
+		},
+		{
+			"wide labels overlap skipping",
+			[][]float64{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
+			[]Option{XAxisRange(0, 1000), XAxisTickCount(5)},
+			`
+ 10.00 ┤        ╭
+  9.00 ┤       ╭╯
+  8.00 ┤      ╭╯
+  7.00 ┤     ╭╯
+  6.00 ┤    ╭╯
+  5.00 ┤   ╭╯
+  4.00 ┤  ╭╯
+  3.00 ┤ ╭╯
+  2.00 ┤╭╯
+  1.00 ┼╯
+       └┬─┬─┬─┬──┬
+        0      1000`,
+		},
+		{
+			"width interpolation with x-axis",
+			[][]float64{{1, 5, 1}},
+			[]Option{Width(10), XAxisRange(0, 100), XAxisTickCount(3)},
+			`
+ 4.56 ┤   ╭─╮
+ 3.37 ┤  ╭╯ ╰╮
+ 2.19 ┤╭─╯   ╰─╮
+ 1.00 ┼╯       ╰
+      └┬───┬────┬
+       0       100`,
+		},
+		{
+			"line ending with x-axis",
+			[][]float64{{1, 1, 1, 1, 1}},
+			[]Option{XAxisRange(0, 100), XAxisTickCount(2), LineEnding("\r\n")},
+			" 1.00 ┼────\r\n      └┬───┬\r\n       0  100",
+		},
+		{
+			"x-axis with legends",
+			[][]float64{{1, 2, 3}, {3, 2, 1}},
+			[]Option{XAxisRange(0, 10), XAxisTickCount(2), SeriesLegends("A", "B")},
+			`
+ 3.00 ┼╮╭
+ 2.00 ┤╰╮
+ 1.00 ┼╯╰
+      └┬─┬
+       0
+` + "\n" + `       ` + "\x1b[0m" + `■` + "\x1b[0m" + ` A   ` + "\x1b[0m" + `■` + "\x1b[0m" + ` B`,
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			expected := strings.TrimPrefix(c.expected, "\n")
+			actual := PlotMany(c.data, c.opts...)
+			if actual != expected {
+				t.Errorf("expected:\n%s\n\ngot:\n%s", expected, actual)
+			}
+		})
 	}
 }
