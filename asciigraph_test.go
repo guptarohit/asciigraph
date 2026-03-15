@@ -1,8 +1,10 @@
 package asciigraph
 
 import (
+	"bytes"
 	"fmt"
 	"math"
+	"os"
 	"strings"
 	"testing"
 )
@@ -830,6 +832,55 @@ func TestXAxis(t *testing.T) {
 			actual := PlotMany(c.data, c.opts...)
 			if actual != expected {
 				t.Errorf("expected:\n%s\n\ngot:\n%s", expected, actual)
+			}
+		})
+	}
+}
+
+func captureStdout(f func()) string {
+	old := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	f()
+
+	w.Close()
+	os.Stdout = old
+
+	var buf bytes.Buffer
+	buf.ReadFrom(r)
+	return buf.String()
+}
+
+func TestClear(t *testing.T) {
+	got := captureStdout(func() {
+		Clear()
+	})
+	expected := "\033[2J\033[H"
+	if got != expected {
+		t.Errorf("Clear() = %q, expected %q", got, expected)
+	}
+}
+
+func TestClearLines(t *testing.T) {
+	cases := []struct {
+		n        int
+		expected string
+	}{
+		{0, ""},
+		{1, "\033[1A\033[J"},
+		{5, "\033[5A\033[J"},
+		{100, "\033[100A\033[J"},
+		{-1, ""},
+	}
+
+	for i, c := range cases {
+		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+			got := captureStdout(func() {
+				ClearLines(c.n)
+			})
+			if got != c.expected {
+				t.Errorf("ClearLines(%d) = %q, expected %q", c.n, got, c.expected)
 			}
 		})
 	}

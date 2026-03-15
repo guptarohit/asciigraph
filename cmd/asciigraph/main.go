@@ -129,6 +129,7 @@ func main() {
 	s := bufio.NewScanner(os.Stdin)
 	s.Split(bufio.ScanLines)
 
+	var lineCount int
 	nextFlushTime := time.Now()
 
 	flushInterval := time.Duration(float64(time.Second) / fps)
@@ -186,8 +187,9 @@ func main() {
 					}
 				}
 				plot := asciigraph.PlotMany(seriesCopy, opts...)
-				asciigraph.Clear()
+				asciigraph.ClearLines(lineCount)
 				fmt.Println(plot)
+				lineCount = strings.Count(plot, "\n") + 1
 				nextFlushTime = time.Now().Add(flushInterval)
 			}
 		}

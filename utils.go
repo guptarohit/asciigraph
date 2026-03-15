@@ -2,11 +2,7 @@ package asciigraph
 
 import (
 	"fmt"
-	"log"
 	"math"
-	"os"
-	"os/exec"
-	"runtime"
 )
 
 func minMaxFloat64Slice(v []float64) (min, max float64) {
@@ -69,24 +65,17 @@ func interpolateArray(data []float64, fitCount int) []float64 {
 	return interpolatedData
 }
 
-// clear terminal screen
-var Clear func()
+// Clear clears the terminal screen using ANSI escape sequences.
+func Clear() {
+	fmt.Print("\033[2J\033[H")
+}
 
-func init() {
-	platform := runtime.GOOS
-
-	if platform == "windows" {
-		Clear = func() {
-			cmd := exec.Command("cmd", "/c", "cls")
-			cmd.Stdout = os.Stdout
-			if err := cmd.Run(); err != nil {
-				log.Fatal(err)
-			}
-		}
-	} else {
-		Clear = func() {
-			fmt.Print("\033[2J\033[H")
-		}
+// ClearLines moves the cursor up n lines and clears from that position
+// to the end of the screen. It is useful for redrawing content in-place,
+// such as when updating a real-time graph.
+func ClearLines(n int) {
+	if n > 0 {
+		fmt.Printf("\033[%dA\033[J", n)
 	}
 }
 
