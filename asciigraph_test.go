@@ -536,8 +536,8 @@ func TestPlotMany(t *testing.T) {
  3.00 ┤   ╰─╮
  2.00 ┤ ╭─╯ ╰─╮
  1.00 ┼─╯     ╰─
-      └┬───┬────┬
-       0       100`},
+      └┬────┬───┬
+       0   50  100`},
 	}
 
 	for i := range cases {
@@ -789,8 +789,8 @@ func TestXAxis(t *testing.T) {
   3.00 ┤ ╭╯
   2.00 ┤╭╯
   1.00 ┼╯
-       └┬─┬─┬─┬──┬
-        0      1000`,
+       └┬─┬──┬─┬─┬
+        0   500`,
 		},
 		{
 			"width interpolation with x-axis",
@@ -801,8 +801,8 @@ func TestXAxis(t *testing.T) {
  3.37 ┤  ╭╯ ╰╮
  2.19 ┤╭─╯   ╰─╮
  1.00 ┼╯       ╰
-      └┬───┬────┬
-       0       100`,
+      └┬────┬───┬
+       0   50  100`,
 		},
 		{
 			"line ending with x-axis",

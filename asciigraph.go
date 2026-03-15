@@ -366,27 +366,54 @@ func addXAxis(lines *bytes.Buffer, config *config, lenMax int, leftPad int) {
 	}
 
 	formatter := config.XAxisValueFormatter
-	if formatter == nil {
-		formatter = defaultXAxisFormatter
-	}
 
-	// compute tick column positions and labels
+	// compute tick column positions and values
 	type tick struct {
 		col   int
+		value float64
 		label string
 	}
 	ticks := make([]tick, tickCount)
 	for i := 0; i < tickCount; i++ {
-		var col int
-		var value float64
 		if tickCount == 1 {
-			col = 0
-			value = xMin
+			ticks[i].col = 0
+			ticks[i].value = xMin
 		} else {
-			col = i * (lenMax - 1) / (tickCount - 1)
-			value = xMin + float64(col)/float64(lenMax-1)*(xMax-xMin)
+			ticks[i].value = xMin + float64(i)/float64(tickCount-1)*(xMax-xMin)
+			ticks[i].col = int(math.Round(float64(lenMax-1) * float64(i) / float64(tickCount-1)))
 		}
-		ticks[i] = tick{col: col, label: formatter(value)}
+	}
+
+	// select formatter: when using default, auto-detect precision based on visible ticks
+	if formatter == nil {
+		// simulate overlap with %g labels to find visible ticks with fractional values
+		hasDecimal := false
+		lastEnd := -1
+		for i := range ticks {
+			label := defaultXAxisFormatter(ticks[i].value)
+			labelLen := utf8.RuneCountInString(label)
+			startCol := leftPad + ticks[i].col - labelLen/2
+			if startCol < 0 {
+				startCol = 0
+			}
+			if startCol > lastEnd {
+				if ticks[i].value != math.Floor(ticks[i].value) {
+					hasDecimal = true
+					break
+				}
+				lastEnd = startCol + labelLen
+			}
+		}
+		if hasDecimal {
+			formatter = func(v float64) string { return fmt.Sprintf("%.2f", v) }
+		} else {
+			formatter = defaultXAxisFormatter
+		}
+	}
+
+	// format labels
+	for i := range ticks {
+		ticks[i].label = formatter(ticks[i].value)
 	}
 
 	// axis line: leftPad-1 spaces + └ + ─/┬ characters
