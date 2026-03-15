@@ -34,6 +34,9 @@ var (
 	delimiter               = ","
 	seriesNum          uint = 1
 	customChar         string
+	xAxisMin           = math.NaN()
+	xAxisMax           = math.NaN()
+	xAxisTicks         int
 )
 
 func main() {
@@ -99,6 +102,9 @@ func main() {
 	flag.StringVar(&delimiter, "d", delimiter, "data `delimiter` for splitting data points in the input stream")
 	flag.UintVar(&seriesNum, "sn", seriesNum, "`number of series` (columns) in the input data")
 	flag.StringVar(&customChar, "x", customChar, "`character` to use for plotting (e.g., *, #, •). Use comma-separated for multiple series (e.g., \"*,#\")")
+	flag.Float64Var(&xAxisMin, "xmin", xAxisMin, "x-axis minimum `value`")
+	flag.Float64Var(&xAxisMax, "xmax", xAxisMax, "x-axis maximum `value`")
+	flag.IntVar(&xAxisTicks, "xt", xAxisTicks, "x-axis `tick count` (default 5, minimum 2)")
 
 	flag.Parse()
 
@@ -117,6 +123,8 @@ func main() {
 	if enableRealTime && realTimeDataBuffer == 0 {
 		realTimeDataBuffer = int(width)
 	}
+
+	xAxisEnabled := !math.IsNaN(xAxisMin) && !math.IsNaN(xAxisMax)
 
 	s := bufio.NewScanner(os.Stdin)
 	s.Split(bufio.ScanLines)
@@ -171,6 +179,12 @@ func main() {
 				if seriesCharsOption != nil {
 					opts = append(opts, seriesCharsOption)
 				}
+				if xAxisEnabled {
+					opts = append(opts, asciigraph.XAxisRange(xAxisMin, xAxisMax))
+					if xAxisTicks > 0 {
+						opts = append(opts, asciigraph.XAxisTickCount(xAxisTicks))
+					}
+				}
 				plot := asciigraph.PlotMany(seriesCopy, opts...)
 				asciigraph.Clear()
 				fmt.Println(plot)
@@ -203,6 +217,12 @@ func main() {
 		}
 		if seriesCharsOption != nil {
 			opts = append(opts, seriesCharsOption)
+		}
+		if xAxisEnabled {
+			opts = append(opts, asciigraph.XAxisRange(xAxisMin, xAxisMax))
+			if xAxisTicks > 0 {
+				opts = append(opts, asciigraph.XAxisTickCount(xAxisTicks))
+			}
 		}
 		plot := asciigraph.PlotMany(series, opts...)
 
