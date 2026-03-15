@@ -63,10 +63,16 @@ type config struct {
 	LineEnding             string
 	SeriesChars            []CharSet
 	YAxisValueFormatter    YAxisValueFormatterFunc
+	XAxisRange             *[2]float64
+	XAxisTickCount         int
+	XAxisValueFormatter    XAxisValueFormatterFunc
 }
 
 // YAxisValueFormatterFunc formats a single Y-axis value.
 type YAxisValueFormatterFunc func(float64) string
+
+// XAxisValueFormatterFunc formats a single X-axis tick value.
+type XAxisValueFormatterFunc func(float64) string
 
 // An optionFunc applies an option.
 type optionFunc func(*config)
@@ -194,5 +200,28 @@ func SeriesChars(charSets ...CharSet) Option {
 func YAxisValueFormatter(f YAxisValueFormatterFunc) Option {
 	return optionFunc(func(c *config) {
 		c.YAxisValueFormatter = f
+	})
+}
+
+// XAxisRange enables the X-axis and maps the given domain [min, max] onto the plot width.
+func XAxisRange(min, max float64) Option {
+	return optionFunc(func(c *config) {
+		c.XAxisRange = &[2]float64{min, max}
+	})
+}
+
+// XAxisTickCount sets the number of ticks on the X-axis. Default is 5, minimum is 2.
+func XAxisTickCount(n int) Option {
+	return optionFunc(func(c *config) {
+		if n >= 2 {
+			c.XAxisTickCount = n
+		}
+	})
+}
+
+// XAxisValueFormatter formats values printed on the X-axis.
+func XAxisValueFormatter(f XAxisValueFormatterFunc) Option {
+	return optionFunc(func(c *config) {
+		c.XAxisValueFormatter = f
 	})
 }
