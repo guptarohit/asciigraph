@@ -42,6 +42,12 @@ func getCharSet(config *config, seriesIndex int) CharSet {
 		if charSet.StartCap == "" {
 			charSet.StartCap = DefaultCharSet.StartCap
 		}
+		if charSet.UpRight == "" {
+			charSet.UpRight = DefaultCharSet.UpRight
+		}
+		if charSet.DownHorizontal == "" {
+			charSet.DownHorizontal = DefaultCharSet.DownHorizontal
+		}
 		return charSet
 	}
 	return DefaultCharSet
@@ -422,12 +428,12 @@ func addXAxis(lines *bytes.Buffer, config *config, lenMax int, leftPad int) {
 	for i := range axisLine {
 		axisLine[i] = ' '
 	}
-	axisLine[leftPad-1] = '└'
+	axisLine[leftPad-1] = []rune(DefaultCharSet.UpRight)[0]
 	for i := 0; i < lenMax; i++ {
-		axisLine[leftPad+i] = '─'
+		axisLine[leftPad+i] = []rune(DefaultCharSet.Horizontal)[0]
 	}
 	for _, tk := range ticks {
-		axisLine[leftPad+tk.col] = '┬'
+		axisLine[leftPad+tk.col] = []rune(DefaultCharSet.DownHorizontal)[0]
 	}
 
 	// write axis line with colors
