@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.9.0](https://github.com/guptarohit/asciigraph/compare/v0.8.1...v0.9.0) (2026-03-28)
+
+
+### Added
+
+* **plot:** add X-axis rendering with tick marks and labels ([#78](https://github.com/guptarohit/asciigraph/pull/78))
+* **cli:** add -xmin, -xmax, and -xt flags for X-axis support ([#78](https://github.com/guptarohit/asciigraph/pull/78))
+
+
+### Fixed
+
+* **docker:** add OCI labels to Dockerfile for ghcr.io metadata ([#76](https://github.com/guptarohit/asciigraph/issues/76)) ([02f3e4a](https://github.com/guptarohit/asciigraph/commit/02f3e4a0f5136d710be39c407f77cfffc384821b))
+
 ## [0.8.1](https://github.com/guptarohit/asciigraph/compare/v0.8.0...v0.8.1) (2026-03-08)
 
 
