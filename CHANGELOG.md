@@ -7,21 +7,13 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-* **cli:** add -xmin, -xmax, and -xt flags for X-axis support ([24e8e38](https://github.com/guptarohit/asciigraph/commit/24e8e38e9f8e1b6c509309091843a145a3983eb3))
-* **options:** add X-axis configuration types and option functions ([4e5e0a8](https://github.com/guptarohit/asciigraph/commit/4e5e0a887cbd244532ca1512fa6abd58808c000f))
-* **plot:** implement X-axis rendering with tick marks and labels ([6c1bb15](https://github.com/guptarohit/asciigraph/commit/6c1bb1549bf7a13c04bdaa7b515f81e1a9c43db6))
+* **plot:** add X-axis rendering with tick marks and labels ([#78](https://github.com/guptarohit/asciigraph/pull/78))
+* **cli:** add -xmin, -xmax, and -xt flags for X-axis support ([#78](https://github.com/guptarohit/asciigraph/pull/78))
 
 
 ### Fixed
 
-* **docker:** add OCI labels to Dockerfile for ghcr.io metadata ([f83d907](https://github.com/guptarohit/asciigraph/commit/f83d9079b0aaac59b9bd15abe4a8cb26fcde9dbe))
 * **docker:** add OCI labels to Dockerfile for ghcr.io metadata ([#76](https://github.com/guptarohit/asciigraph/issues/76)) ([02f3e4a](https://github.com/guptarohit/asciigraph/commit/02f3e4a0f5136d710be39c407f77cfffc384821b))
-* **plot:** compute X-axis tick values in value-space, use %.2f when visible ticks have decimals ([aa3eff7](https://github.com/guptarohit/asciigraph/commit/aa3eff76e4a97b346689de23c83215384853576a))
-
-
-### Changed
-
-* **options:** add X-axis box-drawing characters to default CharSet ([6e65c25](https://github.com/guptarohit/asciigraph/commit/6e65c255366a63e04d98e1e573f34bd9f064eab3))
 
 ## [0.8.1](https://github.com/guptarohit/asciigraph/compare/v0.8.0...v0.8.1) (2026-03-08)
 
