@@ -2,6 +2,39 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.9.0](https://github.com/guptarohit/asciigraph/compare/v0.9.0...v0.9.0) (2026-03-28)
+
+
+### Added
+
+* **cli:** add -xmin, -xmax, and -xt flags for X-axis support ([24e8e38](https://github.com/guptarohit/asciigraph/commit/24e8e38e9f8e1b6c509309091843a145a3983eb3))
+* line ending option for raw terminals ([0148570](https://github.com/guptarohit/asciigraph/commit/0148570342114076f295e175c5bed332c00645a5))
+* line ending option for raw terminals ([573072e](https://github.com/guptarohit/asciigraph/commit/573072ea42de2f4fac94a123f92530aa31100250))
+* **options:** add X-axis configuration types and option functions ([4e5e0a8](https://github.com/guptarohit/asciigraph/commit/4e5e0a887cbd244532ca1512fa6abd58808c000f))
+* **plot:** implement X-axis rendering with tick marks and labels ([6c1bb15](https://github.com/guptarohit/asciigraph/commit/6c1bb1549bf7a13c04bdaa7b515f81e1a9c43db6))
+
+
+### Fixed
+
+* 32-bit compile overflow and release workflow cleanup ([451bece](https://github.com/guptarohit/asciigraph/commit/451becef290c1c8e1d114d73cbe60a05fb5e7c0c))
+* 32-bit compile overflow and release workflow cleanup ([#74](https://github.com/guptarohit/asciigraph/issues/74)) ([7f76123](https://github.com/guptarohit/asciigraph/commit/7f7612366a79f8ef909c872dcb5df677cf4a9fbb))
+* **axis:** remove redundant maxWidth assignment ([134f68d](https://github.com/guptarohit/asciigraph/commit/134f68de5267b05048ddc682d0ab7e7a47dfbbbe))
+* display values for Y-axis when data points are all identical ([1e527b8](https://github.com/guptarohit/asciigraph/commit/1e527b808b1c8602a76e0b6554544ae1ac61f717))
+* display values for Y-axis when data points are all identical ([41e8421](https://github.com/guptarohit/asciigraph/commit/41e8421e4a5062377a25a5b1de53924e451795f4)), closes [#61](https://github.com/guptarohit/asciigraph/issues/61)
+* **docker:** add OCI labels to Dockerfile for ghcr.io metadata ([f83d907](https://github.com/guptarohit/asciigraph/commit/f83d9079b0aaac59b9bd15abe4a8cb26fcde9dbe))
+* **docker:** add OCI labels to Dockerfile for ghcr.io metadata ([#76](https://github.com/guptarohit/asciigraph/issues/76)) ([02f3e4a](https://github.com/guptarohit/asciigraph/commit/02f3e4a0f5136d710be39c407f77cfffc384821b))
+* **legend:** prevent panic when only legends are set without series colors ([20e1ef8](https://github.com/guptarohit/asciigraph/commit/20e1ef88096cc36fe4739a0235deec7580499890))
+* **legend:** prevent panic when only legends are set without series colors ([9220833](https://github.com/guptarohit/asciigraph/commit/92208336ddc6dab76d1e42a6a5a08e779472e762))
+* **plot:** compute X-axis tick values in value-space, use %.2f when visible ticks have decimals ([aa3eff7](https://github.com/guptarohit/asciigraph/commit/aa3eff76e4a97b346689de23c83215384853576a))
+
+
+### Changed
+
+* **axis:** remove minNumLength sentinel from formatter path ([8a81a67](https://github.com/guptarohit/asciigraph/commit/8a81a6718d59db385822e454ecc2e5a387011845))
+* **options:** add X-axis box-drawing characters to default CharSet ([6e65c25](https://github.com/guptarohit/asciigraph/commit/6e65c255366a63e04d98e1e573f34bd9f064eab3))
+* **release:** update goreleaser config for v2 ([94f69c0](https://github.com/guptarohit/asciigraph/commit/94f69c07479ce38a32c6ef076757b77973d95197))
+* Rename min/max variables to avoid builtin conflicts ([275d495](https://github.com/guptarohit/asciigraph/commit/275d495e7ab35e8f7f1c63759a9edc408b613bb2))
+
 ## [0.9.0](https://github.com/guptarohit/asciigraph/compare/v0.8.1...v0.9.0) (2026-03-28)
 
 
