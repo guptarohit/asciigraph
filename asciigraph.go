@@ -42,6 +42,12 @@ func getCharSet(config *config, seriesIndex int) CharSet {
 		if charSet.StartCap == "" {
 			charSet.StartCap = DefaultCharSet.StartCap
 		}
+		if charSet.UpRight == "" {
+			charSet.UpRight = DefaultCharSet.UpRight
+		}
+		if charSet.DownHorizontal == "" {
+			charSet.DownHorizontal = DefaultCharSet.DownHorizontal
+		}
 		return charSet
 	}
 	return DefaultCharSet
@@ -313,6 +319,11 @@ func PlotMany(data [][]float64, options ...Option) string {
 		}
 	}
 
+	// add x-axis if configured
+	if config.XAxisRange != nil {
+		addXAxis(&lines, config, lenMax, leftPad)
+	}
+
 	// add caption if not empty
 	if config.Caption != "" {
 		lines.WriteString(config.LineEnding)
@@ -334,4 +345,157 @@ func PlotMany(data [][]float64, options ...Option) string {
 	}
 
 	return lines.String()
+}
+
+// defaultXAxisFormatter formats X-axis tick values using %g.
+var defaultXAxisFormatter XAxisValueFormatterFunc = func(v float64) string {
+	return fmt.Sprintf("%g", v)
+}
+
+// addXAxis appends an X-axis line and tick labels below the plot body.
+func addXAxis(lines *bytes.Buffer, config *config, lenMax int, leftPad int) {
+	if lenMax <= 0 {
+		return
+	}
+
+	xMin := config.XAxisRange[0]
+	xMax := config.XAxisRange[1]
+
+	tickCount := config.XAxisTickCount
+	if lenMax == 1 {
+		tickCount = 1
+	} else if tickCount < 2 {
+		tickCount = 5
+	}
+	if tickCount > lenMax {
+		tickCount = lenMax
+	}
+
+	formatter := config.XAxisValueFormatter
+
+	// compute tick column positions and values
+	type tick struct {
+		col   int
+		value float64
+		label string
+	}
+	ticks := make([]tick, tickCount)
+	for i := 0; i < tickCount; i++ {
+		if tickCount == 1 {
+			ticks[i].col = 0
+			ticks[i].value = xMin
+		} else {
+			ticks[i].value = xMin + float64(i)/float64(tickCount-1)*(xMax-xMin)
+			ticks[i].col = int(math.Round(float64(lenMax-1) * float64(i) / float64(tickCount-1)))
+		}
+	}
+
+	// select formatter: when using default, auto-detect precision based on visible ticks
+	if formatter == nil {
+		// simulate overlap with %g labels to find visible ticks with fractional values
+		hasDecimal := false
+		lastEnd := -1
+		for i := range ticks {
+			label := defaultXAxisFormatter(ticks[i].value)
+			labelLen := utf8.RuneCountInString(label)
+			startCol := leftPad + ticks[i].col - labelLen/2
+			if startCol < 0 {
+				startCol = 0
+			}
+			if startCol > lastEnd {
+				if ticks[i].value != math.Floor(ticks[i].value) {
+					hasDecimal = true
+					break
+				}
+				lastEnd = startCol + labelLen
+			}
+		}
+		if hasDecimal {
+			formatter = func(v float64) string { return fmt.Sprintf("%.2f", v) }
+		} else {
+			formatter = defaultXAxisFormatter
+		}
+	}
+
+	// format labels
+	for i := range ticks {
+		ticks[i].label = formatter(ticks[i].value)
+	}
+
+	// axis line: leftPad-1 spaces + └ + ─/┬ characters
+	totalWidth := leftPad + lenMax
+	axisLine := make([]rune, totalWidth)
+	for i := range axisLine {
+		axisLine[i] = ' '
+	}
+	axisLine[leftPad-1] = []rune(DefaultCharSet.UpRight)[0]
+	for i := 0; i < lenMax; i++ {
+		axisLine[leftPad+i] = []rune(DefaultCharSet.Horizontal)[0]
+	}
+	for _, tk := range ticks {
+		axisLine[leftPad+tk.col] = []rune(DefaultCharSet.DownHorizontal)[0]
+	}
+
+	// write axis line with colors
+	lines.WriteString(config.LineEnding)
+	axisStr := strings.TrimRight(string(axisLine), " ")
+	if config.AxisColor != Default {
+		lines.WriteString(config.AxisColor.String())
+	}
+	lines.WriteString(axisStr)
+	if config.AxisColor != Default {
+		lines.WriteString(Default.String())
+	}
+
+	// label line: place each label centered on its tick column
+	maxRightExtent := totalWidth
+	for _, tk := range ticks {
+		labelLen := utf8.RuneCountInString(tk.label)
+		endCol := leftPad + tk.col + (labelLen - labelLen/2)
+		if endCol > maxRightExtent {
+			maxRightExtent = endCol
+		}
+	}
+	labelLine := make([]rune, maxRightExtent)
+	for i := range labelLine {
+		labelLine[i] = ' '
+	}
+
+	lastEnd := -1 // tracks the rightmost column used by the previous label
+	for _, tk := range ticks {
+		labelRunes := []rune(tk.label)
+		labelLen := len(labelRunes)
+
+		// center the label on the tick column
+		startCol := leftPad + tk.col - labelLen/2
+		if startCol < 0 {
+			startCol = 0
+		}
+
+		// skip if this label would overlap the previous one (need 1-space gap)
+		if startCol <= lastEnd {
+			continue
+		}
+
+		for j, r := range labelRunes {
+			pos := startCol + j
+			if pos < len(labelLine) {
+				labelLine[pos] = r
+			}
+		}
+		lastEnd = startCol + labelLen
+	}
+
+	// trim and write label line
+	labelStr := strings.TrimRight(string(labelLine), " ")
+	if labelStr != "" {
+		lines.WriteString(config.LineEnding)
+		if config.LabelColor != Default {
+			lines.WriteString(config.LabelColor.String())
+		}
+		lines.WriteString(labelStr)
+		if config.LabelColor != Default {
+			lines.WriteString(Default.String())
+		}
+	}
 }
