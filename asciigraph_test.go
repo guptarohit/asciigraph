@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"runtime"
 	"strings"
 	"testing"
 )
@@ -824,6 +825,24 @@ func TestXAxis(t *testing.T) {
        0
 ` + "\n" + `       ` + "\x1b[0m" + `■` + "\x1b[0m" + ` A   ` + "\x1b[0m" + `■` + "\x1b[0m" + ` B`,
 		},
+		{
+			"colored axis with fractional ticks",
+			[][]float64{{1, 2, 3, 4, 5}},
+			[]Option{Width(40), XAxisRange(0, 1), AxisColor(Red), LabelColor(Blue)},
+			"\x1b[94m 5.00\x1b[0m \x1b[91m┤\x1b[0m                                  ╭────\n\x1b[94m 4.00\x1b[0m \x1b[91m┤\x1b[0m                        ╭─────────╯\n\x1b[94m 3.00\x1b[0m \x1b[91m┤\x1b[0m              ╭─────────╯\n\x1b[94m 2.00\x1b[0m \x1b[91m┤\x1b[0m    ╭─────────╯\n\x1b[94m 1.00\x1b[0m \x1b[91m┼\x1b[0m────╯\n\x1b[91m      └┬─────────┬─────────┬────────┬─────────┬\x1b[0m\n\x1b[94m     0.00      0.25      0.50     0.75      1.00\x1b[0m",
+		},
+		{
+			"tick count exceeding width clamps",
+			[][]float64{{1, 2}},
+			[]Option{XAxisRange(0, 10), XAxisTickCount(9)},
+			" 2.00 ┤╭\n 1.00 ┼╯\n      └┬┬\n       0",
+		},
+		{
+			"wide first-tick label clamps at left",
+			[][]float64{{1, 2}},
+			[]Option{Precision(0), XAxisRange(123456789, 987654321), XAxisTickCount(2)},
+			"  2┤╭\n  1┼╯\n   └┬┬\n1.23456789e+",
+		},
 	}
 
 	for _, c := range cases {
@@ -880,5 +899,81 @@ func TestClearLines(t *testing.T) {
 				t.Errorf("ClearLines(%d) = %q, expected %q", c.n, got, c.expected)
 			}
 		})
+	}
+}
+
+func TestColorString(t *testing.T) {
+	cases := []struct {
+		c    AnsiColor
+		want string
+	}{
+		{Default, "\x1b[0m"},
+		{Black, "\x1b[30m"},
+		{Maroon, "\x1b[31m"},
+		{Silver, "\x1b[37m"},
+		{Gray, "\x1b[90m"},
+		{White, "\x1b[97m"},
+		{Aquamarine, "\x1b[38;5;122m"},
+	}
+	for i, c := range cases {
+		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
+			if got := c.c.String(); got != c.want {
+				t.Errorf("AnsiColor(%d).String() = %q, want %q", c.c, got, c.want)
+			}
+		})
+	}
+}
+
+func TestRoundNaN(t *testing.T) {
+	if got := round(math.NaN()); !math.IsNaN(got) {
+		t.Errorf("round(NaN) = %v, want NaN", got)
+	}
+}
+
+func TestMinMaxFloat64SliceEmptyPanics(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("expected panic on empty slice")
+		}
+	}()
+	minMaxFloat64Slice(nil)
+}
+
+func TestConfigureDefaultLineEnding(t *testing.T) {
+	if c := configure(config{}, nil); c.LineEnding != "\n" {
+		t.Errorf("default LineEnding = %q, want %q", c.LineEnding, "\n")
+	}
+}
+
+func TestGetCharSetFillsDefaults(t *testing.T) {
+	cfg := &config{SeriesChars: []CharSet{{}}}
+	cs := getCharSet(cfg, 0)
+	if cs.Horizontal != DefaultCharSet.Horizontal || cs.VerticalLine != DefaultCharSet.VerticalLine {
+		t.Errorf("getCharSet did not fill empty fields: %+v", cs)
+	}
+}
+
+func TestClearOutputsANSI(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("Clear runs cls on windows")
+	}
+	if got := captureStdout(t, func() { Clear() }); got != "\x1b[2J\x1b[H" {
+		t.Errorf("Clear() = %q", got)
+	}
+}
+
+func TestAddXAxisEmpty(t *testing.T) {
+	var buf bytes.Buffer
+	addXAxis(&buf, &config{XAxisRange: &[2]float64{0, 1}, LineEnding: "\n"}, 0, 0)
+	if buf.Len() != 0 {
+		t.Errorf("addXAxis with lenMax<=0 should write nothing, got %q", buf.String())
+	}
+}
+
+func TestLegendCentering(t *testing.T) {
+	actual := PlotMany([][]float64{{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}}, SeriesLegends("A"))
+	expected := " 10.00 ┤        ╭\n  9.00 ┤       ╭╯\n  8.00 ┤      ╭╯\n  7.00 ┤     ╭╯\n  6.00 ┤    ╭╯\n  5.00 ┤   ╭╯\n  4.00 ┤  ╭╯\n  3.00 ┤ ╭╯\n  2.00 ┤╭╯\n  1.00 ┼╯\n\n           \x1b[0m■\x1b[0m A"
+	if actual != expected {
+		t.Errorf("expected:\n%q\n\ngot:\n%q", expected, actual)
 	}
 }
