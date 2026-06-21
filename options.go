@@ -196,26 +196,21 @@ func SeriesColorGradient(stops ...AnsiColor) Option {
 	})
 }
 
-// ColorAbove colors every plotted point whose value is greater than or equal
-// to threshold with the given color, regardless of which series it belongs
-// to. It is useful for highlighting points that breach an upper limit (e.g.
-// a CPU usage alert threshold). It is overridden by SeriesColorGradient when
-// both are set.
-func ColorAbove(threshold float64, color AnsiColor) Option {
+// ColorAbove colors points whose value is strictly above threshold (value >
+// threshold) with the given color, across all series. It takes precedence over
+// SeriesColorGradient and SeriesColors; other points keep their normal color.
+func ColorAbove(color AnsiColor, threshold float64) Option {
 	return optionFunc(func(c *config) {
 		c.AboveThreshold = &threshold
 		c.AboveColor = color
 	})
 }
 
-// ColorBelow colors every plotted point whose value is less than threshold
-// with the given color, regardless of which series it belongs to. It is
-// useful for highlighting points that fall under a lower limit (e.g. a
-// disk space warning threshold). It is overridden by SeriesColorGradient
-// when both are set. When a point qualifies for both ColorAbove and
-// ColorBelow (which can only happen if the two thresholds overlap),
-// ColorAbove takes precedence.
-func ColorBelow(threshold float64, color AnsiColor) Option {
+// ColorBelow colors points whose value is strictly below threshold (value <
+// threshold) with the given color, across all series. It takes precedence over
+// SeriesColorGradient and SeriesColors; if a point also matches ColorAbove,
+// ColorAbove wins.
+func ColorBelow(color AnsiColor, threshold float64) Option {
 	return optionFunc(func(c *config) {
 		c.BelowThreshold = &threshold
 		c.BelowColor = color

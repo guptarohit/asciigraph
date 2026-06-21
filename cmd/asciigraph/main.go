@@ -26,6 +26,8 @@ var (
 	fps                float64 = 24
 	seriesColors       []asciigraph.AnsiColor
 	gradientColors     []asciigraph.AnsiColor
+	colorAbove         asciigraph.Option
+	colorBelow         asciigraph.Option
 	seriesLegends      []string
 	captionColor       asciigraph.AnsiColor
 	axisColor          asciigraph.AnsiColor
@@ -77,6 +79,24 @@ func main() {
 			gradientColors = colors
 			return nil
 		}
+	})
+
+	flag.Func("ca", "color points `above` a threshold: \"color,value\" (e.g. \"red,4\")", func(str string) error {
+		c, t, err := parseColorThreshold(str)
+		if err != nil {
+			return err
+		}
+		colorAbove = asciigraph.ColorAbove(c, t)
+		return nil
+	})
+
+	flag.Func("cb", "color points `below` a threshold: \"color,value\" (e.g. \"green,2\")", func(str string) error {
+		c, t, err := parseColorThreshold(str)
+		if err != nil {
+			return err
+		}
+		colorBelow = asciigraph.ColorBelow(c, t)
+		return nil
 	})
 
 	flag.Func("cc", "`caption color` of the plot", func(str string) error {
@@ -195,6 +215,12 @@ func main() {
 				if seriesCharsOption != nil {
 					opts = append(opts, seriesCharsOption)
 				}
+				if colorAbove != nil {
+					opts = append(opts, colorAbove)
+				}
+				if colorBelow != nil {
+					opts = append(opts, colorBelow)
+				}
 				if xAxisEnabled {
 					opts = append(opts, asciigraph.XAxisRange(xAxisMin, xAxisMax))
 					if xAxisTicks > 0 {
@@ -239,6 +265,12 @@ func main() {
 		if seriesCharsOption != nil {
 			opts = append(opts, seriesCharsOption)
 		}
+		if colorAbove != nil {
+			opts = append(opts, colorAbove)
+		}
+		if colorBelow != nil {
+			opts = append(opts, colorBelow)
+		}
 		if xAxisEnabled {
 			opts = append(opts, asciigraph.XAxisRange(xAxisMin, xAxisMax))
 			if xAxisTicks > 0 {
@@ -264,6 +296,23 @@ func parseColors(colors string) ([]asciigraph.AnsiColor, bool) {
 	}
 
 	return parsedColors, true
+}
+
+// parseColorThreshold parses a "color,value" pair such as "red,4".
+func parseColorThreshold(s string) (asciigraph.AnsiColor, float64, error) {
+	parts := strings.SplitN(s, ",", 2)
+	if len(parts) != 2 {
+		return 0, 0, errors.New("expected `color,value` (e.g. \"red,4\")")
+	}
+	color, ok := parseColor(strings.TrimSpace(parts[0]))
+	if !ok {
+		return 0, 0, errors.New("unrecognized color, check available color names at https://www.w3.org/TR/SVG11/types.html#ColorKeywords")
+	}
+	threshold, err := strconv.ParseFloat(strings.TrimSpace(parts[1]), 64)
+	if err != nil || math.IsNaN(threshold) || math.IsInf(threshold, 0) {
+		return 0, 0, fmt.Errorf("invalid threshold value %q", strings.TrimSpace(parts[1]))
+	}
+	return color, threshold, nil
 }
 
 // clearPreviousGraph clears the previous graph in realtime mode by moving the

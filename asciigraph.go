@@ -229,15 +229,17 @@ func PlotMany(data [][]float64, options ...Option) string {
 		}
 	}
 	pickColor := func(plotRow int, seriesColor AnsiColor) AnsiColor {
-		if rowColors != nil {
-			return rowColors[plotRow]
-		}
+		// Thresholds take precedence over a gradient, which takes precedence over
+		// the per-series color.
 		magnitude := magnitudes[plotRow]
-		if config.AboveThreshold != nil && magnitude >= *config.AboveThreshold {
+		if config.AboveThreshold != nil && magnitude > *config.AboveThreshold {
 			return config.AboveColor
 		}
 		if config.BelowThreshold != nil && magnitude < *config.BelowThreshold {
 			return config.BelowColor
+		}
+		if rowColors != nil {
+			return rowColors[plotRow]
 		}
 		return seriesColor
 	}

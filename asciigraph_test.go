@@ -974,9 +974,9 @@ func TestLegendUncoloredUnderGradient(t *testing.T) {
 }
 
 func TestColorAbove(t *testing.T) {
-	// Only the top point (3) is >= the threshold of 3, so only it should be
+	// Only the top point (3) is above the threshold of 2, so only it should be
 	// colored; the rest keep the default series color.
-	actual := PlotMany([][]float64{{1, 2, 3}}, ColorAbove(3, Red))
+	actual := PlotMany([][]float64{{1, 2, 3}}, ColorAbove(Red, 2))
 	expected := " 3.00 ┤ \x1b[91m╭\x1b[0m\n 2.00 ┤╭╯\n 1.00 ┼╯"
 	if actual != expected {
 		t.Errorf("expected:\n%q\n\ngot:\n%q", expected, actual)
@@ -986,7 +986,7 @@ func TestColorAbove(t *testing.T) {
 func TestColorBelow(t *testing.T) {
 	// Only the bottom point (1) is < the threshold of 2, so only it should be
 	// colored; the rest keep the default series color.
-	actual := PlotMany([][]float64{{1, 2, 3}}, ColorBelow(2, Blue))
+	actual := PlotMany([][]float64{{1, 2, 3}}, ColorBelow(Blue, 2))
 	expected := " 3.00 ┤ ╭\n 2.00 ┤╭╯\n 1.00 ┼\x1b[94m╯\x1b[0m"
 	if actual != expected {
 		t.Errorf("expected:\n%q\n\ngot:\n%q", expected, actual)
@@ -998,8 +998,8 @@ func TestColorAboveAndBelowTogether(t *testing.T) {
 	// middle, in-range points colored with the series' own color.
 	actual := PlotMany([][]float64{{1, 2, 3}},
 		SeriesColors(Green),
-		ColorAbove(3, Red),
-		ColorBelow(2, Blue),
+		ColorAbove(Red, 2),
+		ColorBelow(Blue, 2),
 	)
 	expected := " 3.00 ┤ \x1b[91m╭\x1b[0m\n 2.00 ┤\x1b[32m╭╯\x1b[0m\n 1.00 ┼\x1b[94m╯\x1b[0m"
 	if actual != expected {
@@ -1010,7 +1010,7 @@ func TestColorAboveAndBelowTogether(t *testing.T) {
 func TestColorAboveTakesPrecedenceOverColorBelowOnOverlap(t *testing.T) {
 	// If the two threshold ranges overlap, a point that qualifies for both
 	// must resolve to the ColorAbove color, as documented.
-	actual := PlotMany([][]float64{{1, 5, 9}}, ColorAbove(0, Red), ColorBelow(10, Blue))
+	actual := PlotMany([][]float64{{1, 5, 9}}, ColorAbove(Red, 0), ColorBelow(Blue, 10))
 	if !strings.Contains(actual, Red.String()) {
 		t.Errorf("expected ColorAbove (Red) to win on overlap:\n%q", actual)
 	}
@@ -1019,15 +1019,35 @@ func TestColorAboveTakesPrecedenceOverColorBelowOnOverlap(t *testing.T) {
 	}
 }
 
-func TestColorAboveBelowOverriddenByGradient(t *testing.T) {
-	// SeriesColorGradient takes precedence over the simpler threshold-based
-	// coloring when both are configured.
-	withGradient := PlotMany([][]float64{{1, 2, 3}},
-		ColorAbove(3, Red),
+func TestThresholdTakesPrecedenceOverGradient(t *testing.T) {
+	// Thresholds take precedence over SeriesColorGradient for matching points.
+	withThreshold := PlotMany([][]float64{{1, 2, 3}},
 		SeriesColorGradient(Blue, Green),
+		ColorAbove(Red, 2),
 	)
-	withoutThresholds := PlotMany([][]float64{{1, 2, 3}}, SeriesColorGradient(Blue, Green))
-	if withGradient != withoutThresholds {
-		t.Errorf("expected gradient to override ColorAbove:\ngot:  %q\nwant: %q", withGradient, withoutThresholds)
+	if !strings.Contains(withThreshold, Red.String()) {
+		t.Errorf("expected ColorAbove (Red) to override the gradient:\n%q", withThreshold)
+	}
+	gradientOnly := PlotMany([][]float64{{1, 2, 3}}, SeriesColorGradient(Blue, Green))
+	if withThreshold == gradientOnly {
+		t.Errorf("threshold should change the output vs gradient-only:\n%q", withThreshold)
+	}
+	// ColorBelow overrides the gradient too.
+	withBelow := PlotMany([][]float64{{1, 2, 3}},
+		SeriesColorGradient(Blue, Green),
+		ColorBelow(Magenta, 2),
+	)
+	if !strings.Contains(withBelow, Magenta.String()) {
+		t.Errorf("expected ColorBelow (Magenta) to override the gradient:\n%q", withBelow)
+	}
+}
+
+func TestThresholdAcrossSeries(t *testing.T) {
+	// One series sits entirely above the threshold, the other entirely below —
+	// thresholds apply to every series, not just the first.
+	actual := PlotMany([][]float64{{9, 9, 9}, {1, 1, 1}}, ColorAbove(Red, 5), ColorBelow(Green, 5))
+	expected := " 9.00 ┼\x1b[91m──\x1b[0m\n 8.00 ┤\n 7.00 ┤\n 6.00 ┤\n 5.00 ┤\n 4.00 ┤\n 3.00 ┤\n 2.00 ┤\n 1.00 ┼\x1b[32m──\x1b[0m"
+	if actual != expected {
+		t.Errorf("expected:\n%q\n\ngot:\n%q", expected, actual)
 	}
 }
