@@ -972,3 +972,62 @@ func TestLegendUncoloredUnderGradient(t *testing.T) {
 		t.Errorf("expected a default-colored legend box:\n%q", out)
 	}
 }
+
+func TestColorAbove(t *testing.T) {
+	// Only the top point (3) is >= the threshold of 3, so only it should be
+	// colored; the rest keep the default series color.
+	actual := PlotMany([][]float64{{1, 2, 3}}, ColorAbove(3, Red))
+	expected := " 3.00 ┤ \x1b[91m╭\x1b[0m\n 2.00 ┤╭╯\n 1.00 ┼╯"
+	if actual != expected {
+		t.Errorf("expected:\n%q\n\ngot:\n%q", expected, actual)
+	}
+}
+
+func TestColorBelow(t *testing.T) {
+	// Only the bottom point (1) is < the threshold of 2, so only it should be
+	// colored; the rest keep the default series color.
+	actual := PlotMany([][]float64{{1, 2, 3}}, ColorBelow(2, Blue))
+	expected := " 3.00 ┤ ╭\n 2.00 ┤╭╯\n 1.00 ┼\x1b[94m╯\x1b[0m"
+	if actual != expected {
+		t.Errorf("expected:\n%q\n\ngot:\n%q", expected, actual)
+	}
+}
+
+func TestColorAboveAndBelowTogether(t *testing.T) {
+	// Highlight a series breaching both an upper and lower bound, leaving the
+	// middle, in-range points colored with the series' own color.
+	actual := PlotMany([][]float64{{1, 2, 3}},
+		SeriesColors(Green),
+		ColorAbove(3, Red),
+		ColorBelow(2, Blue),
+	)
+	expected := " 3.00 ┤ \x1b[91m╭\x1b[0m\n 2.00 ┤\x1b[32m╭╯\x1b[0m\n 1.00 ┼\x1b[94m╯\x1b[0m"
+	if actual != expected {
+		t.Errorf("expected:\n%q\n\ngot:\n%q", expected, actual)
+	}
+}
+
+func TestColorAboveTakesPrecedenceOverColorBelowOnOverlap(t *testing.T) {
+	// If the two threshold ranges overlap, a point that qualifies for both
+	// must resolve to the ColorAbove color, as documented.
+	actual := PlotMany([][]float64{{1, 5, 9}}, ColorAbove(0, Red), ColorBelow(10, Blue))
+	if !strings.Contains(actual, Red.String()) {
+		t.Errorf("expected ColorAbove (Red) to win on overlap:\n%q", actual)
+	}
+	if strings.Contains(actual, Blue.String()) {
+		t.Errorf("ColorBelow (Blue) should not apply when ColorAbove also matches:\n%q", actual)
+	}
+}
+
+func TestColorAboveBelowOverriddenByGradient(t *testing.T) {
+	// SeriesColorGradient takes precedence over the simpler threshold-based
+	// coloring when both are configured.
+	withGradient := PlotMany([][]float64{{1, 2, 3}},
+		ColorAbove(3, Red),
+		SeriesColorGradient(Blue, Green),
+	)
+	withoutThresholds := PlotMany([][]float64{{1, 2, 3}}, SeriesColorGradient(Blue, Green))
+	if withGradient != withoutThresholds {
+		t.Errorf("expected gradient to override ColorAbove:\ngot:  %q\nwant: %q", withGradient, withoutThresholds)
+	}
+}

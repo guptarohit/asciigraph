@@ -221,6 +221,53 @@ Running this example would render the following graph:
 
 <img src=".github/assets/gradient.png" alt="gradient graph" width="350" />
 
+### Threshold coloring
+
+`ColorAbove` and `ColorBelow` highlight points that breach a threshold —
+useful for flagging alerts, like a CPU usage spike or a disk space warning —
+without recoloring the whole series. Points that don't cross a threshold keep
+the series' own color (set via `SeriesColors`, or the default if unset). When
+both thresholds match the same point, `ColorAbove` wins. `SeriesColorGradient`
+takes precedence over both when configured.
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/guptarohit/asciigraph"
+)
+
+func main() {
+	data := []float64{42, 48, 55, 78, 91, 85, 60, 38, 22, 15, 25, 50, 65, 50, 45}
+	graph := asciigraph.Plot(data,
+		asciigraph.Height(10),
+		asciigraph.Caption("CPU usage % (red: critical, yellow: idle)"),
+		asciigraph.ColorAbove(80, asciigraph.Red),
+		asciigraph.ColorBelow(20, asciigraph.Yellow),
+	)
+	fmt.Println(graph)
+}
+```
+
+Running this example would render the following graph, with the spike above
+80% in red and the dip below 20% in yellow:
+
+```
+ 91.00 ┤   ╭╮
+ 83.40 ┤   │╰╮
+ 75.80 ┤  ╭╯ │
+ 68.20 ┤  │  │     ╭╮
+ 60.60 ┤  │  ╰╮    ││
+ 53.00 ┤ ╭╯   │   ╭╯╰╮
+ 45.40 ┼─╯    │   │  ╰
+ 37.80 ┤      ╰╮  │
+ 30.20 ┤       │  │
+ 22.60 ┤       ╰╮╭╯
+ 15.00 ┤        ╰╯
+        CPU usage % (red: critical, yellow: idle)
+```
+
 ### Legends for colored graphs
 
 The graph can include legends for each series, making it easier to interpret.

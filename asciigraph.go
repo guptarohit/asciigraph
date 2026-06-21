@@ -232,6 +232,13 @@ func PlotMany(data [][]float64, options ...Option) string {
 		if rowColors != nil {
 			return rowColors[plotRow]
 		}
+		magnitude := magnitudes[plotRow]
+		if config.AboveThreshold != nil && magnitude >= *config.AboveThreshold {
+			return config.AboveColor
+		}
+		if config.BelowThreshold != nil && magnitude < *config.BelowThreshold {
+			return config.BelowColor
+		}
 		return seriesColor
 	}
 

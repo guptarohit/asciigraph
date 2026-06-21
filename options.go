@@ -66,6 +66,10 @@ type config struct {
 	LabelColor             AnsiColor
 	SeriesColors           []AnsiColor
 	Gradient               []AnsiColor
+	AboveThreshold         *float64
+	AboveColor             AnsiColor
+	BelowThreshold         *float64
+	BelowColor             AnsiColor
 	SeriesLegends          []string
 	LineEnding             string
 	SeriesChars            []CharSet
@@ -189,6 +193,32 @@ func SeriesColorGradient(stops ...AnsiColor) Option {
 	gradient := append([]AnsiColor(nil), stops...)
 	return optionFunc(func(c *config) {
 		c.Gradient = gradient
+	})
+}
+
+// ColorAbove colors every plotted point whose value is greater than or equal
+// to threshold with the given color, regardless of which series it belongs
+// to. It is useful for highlighting points that breach an upper limit (e.g.
+// a CPU usage alert threshold). It is overridden by SeriesColorGradient when
+// both are set.
+func ColorAbove(threshold float64, color AnsiColor) Option {
+	return optionFunc(func(c *config) {
+		c.AboveThreshold = &threshold
+		c.AboveColor = color
+	})
+}
+
+// ColorBelow colors every plotted point whose value is less than threshold
+// with the given color, regardless of which series it belongs to. It is
+// useful for highlighting points that fall under a lower limit (e.g. a
+// disk space warning threshold). It is overridden by SeriesColorGradient
+// when both are set. When a point qualifies for both ColorAbove and
+// ColorBelow (which can only happen if the two thresholds overlap),
+// ColorAbove takes precedence.
+func ColorBelow(threshold float64, color AnsiColor) Option {
+	return optionFunc(func(c *config) {
+		c.BelowThreshold = &threshold
+		c.BelowColor = color
 	})
 }
 
