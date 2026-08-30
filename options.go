@@ -77,6 +77,7 @@ type config struct {
 	XAxisRange             *[2]float64
 	XAxisTickCount         int
 	XAxisValueFormatter    XAxisValueFormatterFunc
+	MergeSeries            bool
 }
 
 // YAxisValueFormatterFunc formats a single Y-axis value.
@@ -268,5 +269,22 @@ func XAxisTickCount(n int) Option {
 func XAxisValueFormatter(f XAxisValueFormatterFunc) Option {
 	return optionFunc(func(c *config) {
 		c.XAxisValueFormatter = f
+	})
+}
+
+// MergeSeries draws the junction where two series cross, instead of letting
+// whichever is drawn last overwrite the other.
+//
+// Without it, two lines meeting in one cell leave only the second one's
+// character there, and a crossing reads as a gap in the line underneath. With
+// it, a "╯" meeting a "╰" becomes "┴", a "─" meeting a "│" becomes "┼", and so
+// on for every combination.
+//
+// The junction is drawn with box-drawing characters even where a series has a
+// CharSet of its own, since a custom character says nothing about which sides
+// of the cell it touches.
+func MergeSeries() Option {
+	return optionFunc(func(c *config) {
+		c.MergeSeries = true
 	})
 }

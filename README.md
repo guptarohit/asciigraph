@@ -73,6 +73,38 @@ Running this example would render the following graph:
  0.00 ┼╯     ╰
 ```
 
+### Merging series at crossings
+
+Where two series meet in the same cell, whichever is drawn last wins, and the
+crossing reads as a break in the line underneath. `MergeSeries()` joins them
+instead, drawing a `┼` where a `─` and a `│` share a cell.
+
+It joins a CROSSING only, and only between lines of the same color. Anything
+else still overwrites, for two reasons that are easier to see than to describe:
+
+  - A union that is not a crossing is a T, and a T says the lines BRANCH. On
+    real data that welds separate curves into one connected web, which is
+    harder to read than the break it set out to fix.
+  - A cell carries one color, so a junction between differently colored lines
+    has to credit one and lie about the other -- a red line running into a blue
+    `┼` looks like it turned blue. A neutral color lies about both.
+
+```go
+	data := [][]float64{{0, 1, 2, 3, 3, 3, 2, 0}, {5, 4, 2, 1, 4, 6, 6}}
+	graph := asciigraph.PlotMany(data, asciigraph.MergeSeries())
+```
+
+The same graph as above, with the crossings joined:
+```bash
+ 6.00 ┤    ╭─
+ 5.00 ┼╮   │
+ 4.00 ┤╰╮ ╭╯
+ 3.00 ┤ │╭┼─╮
+ 2.00 ┤ ╰╮│ ╰╮
+ 1.00 ┤╭╯╰╯  │
+ 0.00 ┼╯     ╰
+```
+
 ### Custom Y-axis value formatting
 
 Use `YAxisValueFormatter(...)` to control how values printed on the Y-axis are rendered.
@@ -352,6 +384,8 @@ Options:
     	lower bound set the minimum value for the vertical axis (ignored if series contains lower values) (default +Inf)
   -lc label color
     	y-axis label color of the plot
+  -m merge
+    	merge the junctions where series cross, e.g. drawing ┴ where ╯ meets ╰
   -o offset
     	offset in columns, for the label (default 3)
   -p precision
