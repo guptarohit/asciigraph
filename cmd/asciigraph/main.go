@@ -40,6 +40,7 @@ var (
 	xAxisMin           = math.NaN()
 	xAxisMax           = math.NaN()
 	xAxisTicks         int
+	mergeSeries        bool
 	lastGraphLines     int // Track last graph height for clearing in realtime mode
 )
 
@@ -140,6 +141,7 @@ func main() {
 	flag.Float64Var(&xAxisMin, "xmin", xAxisMin, "x-axis minimum `value`")
 	flag.Float64Var(&xAxisMax, "xmax", xAxisMax, "x-axis maximum `value`")
 	flag.IntVar(&xAxisTicks, "xt", xAxisTicks, "x-axis `tick count` (default 5, minimum 2)")
+	flag.BoolVar(&mergeSeries, "m", mergeSeries, "`merge` the junctions where series cross, e.g. drawing ┴ where ╯ meets ╰")
 
 	flag.Parse()
 
@@ -221,6 +223,9 @@ func main() {
 				if colorBelow != nil {
 					opts = append(opts, colorBelow)
 				}
+				if mergeSeries {
+					opts = append(opts, asciigraph.MergeSeries())
+				}
 				if xAxisEnabled {
 					opts = append(opts, asciigraph.XAxisRange(xAxisMin, xAxisMax))
 					if xAxisTicks > 0 {
@@ -270,6 +275,9 @@ func main() {
 		}
 		if colorBelow != nil {
 			opts = append(opts, colorBelow)
+		}
+		if mergeSeries {
+			opts = append(opts, asciigraph.MergeSeries())
 		}
 		if xAxisEnabled {
 			opts = append(opts, asciigraph.XAxisRange(xAxisMin, xAxisMax))
