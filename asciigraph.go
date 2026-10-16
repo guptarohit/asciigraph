@@ -353,8 +353,9 @@ func PlotMany(data [][]float64, options ...Option) string {
 	if config.Caption != "" {
 		lines.WriteString(config.LineEnding)
 		lines.WriteString(strings.Repeat(" ", leftPad))
-		if len(config.Caption) < lenMax {
-			lines.WriteString(strings.Repeat(" ", (lenMax-len(config.Caption))/2))
+		captionLength := utf8.RuneCountInString(config.Caption)
+		if captionLength < lenMax {
+			lines.WriteString(strings.Repeat(" ", (lenMax-captionLength)/2))
 		}
 		if config.CaptionColor != Default {
 			lines.WriteString(config.CaptionColor.String())
