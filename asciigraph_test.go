@@ -612,6 +612,34 @@ func TestLineEndingPlotMany(t *testing.T) {
 	}
 }
 
+func TestCaptionCenteringWithMultibyteText(t *testing.T) {
+	data := make([]float64, 16)
+	for i := range data {
+		data[i] = 1
+	}
+
+	for _, tc := range []struct {
+		caption string
+		padding int
+	}{
+		{"test", 13},
+		{"café", 13},
+		{"θεός", 13},
+		{"тест", 13},
+		{"тесттест", 11},
+	} {
+		t.Run(tc.caption, func(t *testing.T) {
+			graph := Plot(data, Caption(tc.caption))
+			lines := strings.Split(graph, "\n")
+			// Center captions within the 16-column plot, after the seven-column offset.
+			want := strings.Repeat(" ", tc.padding) + tc.caption
+			if got := lines[len(lines)-1]; got != want {
+				t.Errorf("caption line: want %q, got %q", want, got)
+			}
+		})
+	}
+}
+
 func TestLineEndingWithCaption(t *testing.T) {
 	data := []float64{1, 2, 3}
 
