@@ -155,6 +155,34 @@ Running this example would render the following graph:
         0      7     14
 ```
 
+### Dual Y-axis Support
+
+Use `DualAxis()` to plot multiple series across two independent vertical scales. The primary series scales to the left Y-axis, while secondary series scale to the right Y-axis.
+
+By default, series 0 uses the primary axis and subsequent series use the secondary axis. Pass `SecondarySeries(indices...)` to assign specific series indices to the secondary axis. Additional configuration options include `SecondaryLowerBound`, `SecondaryUpperBound`, `SecondaryPrecision`, `SecondaryAxisColor`, `SecondaryLabelColor`, and `SecondaryYAxisValueFormatter`.
+
+```go
+package main
+
+import (
+	"fmt"
+	"github.com/guptarohit/asciigraph"
+)
+
+func main() {
+	primary := []float64{1, 2, 3, 4, 3, 2, 1}
+	secondary := []float64{10, 20, 40, 30, 20, 15, 10}
+
+	graph := asciigraph.PlotMany([][]float64{primary, secondary},
+		asciigraph.DualAxis(),
+		asciigraph.SeriesColors(asciigraph.Red, asciigraph.Blue),
+		asciigraph.SeriesLegends("Temperature", "Pressure"),
+	)
+
+	fmt.Println(graph)
+}
+```
+
 ### Colored graphs
 
 ```go
@@ -342,6 +370,8 @@ Options:
     	caption color of the plot
   -d delimiter
     	data delimiter for splitting data points in the input stream (default ",")
+  -da dual axis
+    	enables dual Y-axis scaling for multi-series plots
   -f fps
     	set fps to control how frequently graph to be rendered when realtime graph enabled (default 24)
   -g gradient

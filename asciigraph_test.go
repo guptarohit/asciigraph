@@ -1079,3 +1079,209 @@ func TestThresholdAcrossSeries(t *testing.T) {
 		t.Errorf("expected:\n%q\n\ngot:\n%q", expected, actual)
 	}
 }
+
+func TestDualAxisBasic(t *testing.T) {
+	data := [][]float64{
+		{1, 2, 3},
+		{10, 20, 30},
+	}
+	actual := PlotMany(data, DualAxis())
+	expected := " 3.00 ┤ ╭┼ 30.00\n 2.00 ┤╭╯├ 20.00\n 1.00 ┼╯ ├ 10.00"
+	if actual != expected {
+		t.Errorf("expected:\n%q\n\ngot:\n%q", expected, actual)
+	}
+}
+
+func TestDualAxisInverted(t *testing.T) {
+	data := [][]float64{
+		{1, 2, 3},
+		{30, 20, 10},
+	}
+	actual := PlotMany(data, DualAxis())
+	expected := " 3.00 ┤╮╭├ 30.00\n 2.00 ┤╰╮├ 20.00\n 1.00 ┼╯╰┼ 10.00"
+	if actual != expected {
+		t.Errorf("expected:\n%q\n\ngot:\n%q", expected, actual)
+	}
+}
+
+func TestDualAxisSecondarySeriesSelection(t *testing.T) {
+	data := [][]float64{
+		{0, 2},
+		{1, 2},
+		{100, 200},
+	}
+	actual := PlotMany(data, SecondarySeries(2))
+	expected := " 2.00 ┤╭┼ 200\n 1.00 ┼│├ 150\n 0.00 ┼╯├ 100"
+	if actual != expected {
+		t.Errorf("expected:\n%q\n\ngot:\n%q", expected, actual)
+	}
+}
+
+func TestDualAxisBounds(t *testing.T) {
+	data := [][]float64{
+		{10, 10},
+		{50, 50},
+	}
+	actual := PlotMany(data,
+		DualAxis(),
+		Height(2),
+		LowerBound(0),
+		UpperBound(20),
+		SecondaryLowerBound(0),
+		SecondaryUpperBound(100),
+	)
+	expected := " 20.00 ┤ ├ 100.00\n 10.00 ┼─┼  50.00\n  0.00 ┤ ├   0.00"
+	if actual != expected {
+		t.Errorf("expected:\n%q\n\ngot:\n%q", expected, actual)
+	}
+}
+
+func TestDualAxisPrecision(t *testing.T) {
+	data := [][]float64{
+		{1.1, 2.5},
+		{10.123, 20.456},
+	}
+	actual := PlotMany(data,
+		DualAxis(),
+		Precision(1),
+		SecondaryPrecision(3),
+	)
+	if !strings.Contains(actual, " 2.5 ┤") || !strings.Contains(actual, " 1.1 ┼") {
+		t.Errorf("expected primary precision 1 labels in output:\n%s", actual)
+	}
+	if !strings.Contains(actual, "20.456") || !strings.Contains(actual, "10.123") {
+		t.Errorf("expected secondary precision 3 labels in output:\n%s", actual)
+	}
+}
+
+func TestDualAxisFormatters(t *testing.T) {
+	data := [][]float64{
+		{10, 20},
+		{1000, 2000},
+	}
+	actual := PlotMany(data,
+		DualAxis(),
+		YAxisValueFormatter(func(v float64) string {
+			return fmt.Sprintf("%.0f C", v)
+		}),
+		SecondaryYAxisValueFormatter(func(v float64) string {
+			return fmt.Sprintf("%.0f kPa", v)
+		}),
+	)
+	if !strings.Contains(actual, "20 C ┤") || !strings.Contains(actual, "10 C ┼") {
+		t.Errorf("expected custom primary formatted labels:\n%s", actual)
+	}
+	if !strings.Contains(actual, "2000 kPa") || !strings.Contains(actual, "1000 kPa") {
+		t.Errorf("expected custom secondary formatted labels:\n%s", actual)
+	}
+}
+
+func TestDualAxisColors(t *testing.T) {
+	data := [][]float64{
+		{1, 2},
+		{10, 20},
+	}
+	actual := PlotMany(data,
+		DualAxis(),
+		SeriesColors(Red, Blue),
+		AxisColor(Green),
+		LabelColor(Yellow),
+		SecondaryAxisColor(Cyan),
+		SecondaryLabelColor(Magenta),
+	)
+	if !strings.Contains(actual, Green.String()+"┤") {
+		t.Errorf("expected primary axis green color:\n%q", actual)
+	}
+	if !strings.Contains(actual, Yellow.String()) {
+		t.Errorf("expected primary label yellow color:\n%q", actual)
+	}
+	if !strings.Contains(actual, Cyan.String()+"┼") {
+		t.Errorf("expected secondary axis cyan color:\n%q", actual)
+	}
+	if !strings.Contains(actual, Magenta.String()) {
+		t.Errorf("expected secondary label magenta color:\n%q", actual)
+	}
+}
+
+func TestDualAxisWithLegendsAndCaption(t *testing.T) {
+	data := [][]float64{
+		{1, 2, 3},
+		{10, 20, 30},
+	}
+	actual := PlotMany(data,
+		DualAxis(),
+		SeriesColors(Red, Blue),
+		SeriesLegends("Primary", "Secondary"),
+		Caption("Dual Axis Graph"),
+	)
+	if !strings.Contains(actual, "Primary") || !strings.Contains(actual, "Secondary") {
+		t.Errorf("expected legends in output:\n%s", actual)
+	}
+	if !strings.Contains(actual, "Dual Axis Graph") {
+		t.Errorf("expected caption in output:\n%s", actual)
+	}
+}
+
+func TestDualAxisWidthInterpolation(t *testing.T) {
+	data := [][]float64{
+		{1, 5, 1},
+		{10, 50, 10},
+	}
+	actual := PlotMany(data,
+		DualAxis(),
+		Width(9),
+	)
+	lines := strings.Split(actual, "\n")
+	if len(lines) == 0 {
+		t.Fatalf("expected non-empty plot")
+	}
+	if !strings.Contains(lines[0], "5.00 ┤") || !strings.Contains(lines[0], "50.00") {
+		t.Errorf("expected top row to align with 5.00 and 50.00:\n%s", actual)
+	}
+}
+
+func TestDualAxisFlatSecondary(t *testing.T) {
+	data := [][]float64{
+		{1, 2, 3},
+		{50, 50, 50},
+	}
+	actual := PlotMany(data, DualAxis())
+	if !strings.Contains(actual, "50.00") {
+		t.Errorf("expected flat secondary series value 50.00 on right axis:\n%s", actual)
+	}
+}
+
+func TestDualAxisFlatPrimary(t *testing.T) {
+	data := [][]float64{
+		{5, 5, 5},
+		{10, 20, 30},
+	}
+	actual := PlotMany(data, DualAxis(), Height(4))
+	if !strings.Contains(actual, "5.00 ┼") || !strings.Contains(actual, "30.00") {
+		t.Errorf("expected flat primary 5.00 and secondary scale 30.00:\n%s", actual)
+	}
+}
+
+func TestDualAxisFallbackSingleSeries(t *testing.T) {
+	data := [][]float64{
+		{1, 2, 3},
+	}
+	singleAxis := PlotMany(data)
+	dualAttempt := PlotMany(data, DualAxis())
+	if singleAxis != dualAttempt {
+		t.Errorf("single series with DualAxis() should equal standard PlotMany:\ngot:\n%q\nwant:\n%q", dualAttempt, singleAxis)
+	}
+}
+
+func TestDualAxisDisabled(t *testing.T) {
+	data := [][]float64{
+		{1, 2, 3},
+		{10, 20, 30},
+	}
+	singleAxis := PlotMany(data)
+	dualDisabled := PlotMany(data, DualAxis(false))
+	if singleAxis != dualDisabled {
+		t.Errorf("DualAxis(false) should produce standard multi-series single-axis plot:\ngot:\n%q\nwant:\n%q", dualDisabled, singleAxis)
+	}
+}
+

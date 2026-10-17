@@ -88,15 +88,54 @@ func PlotMany(data [][]float64, options ...Option) string {
 		lenMax = config.Width
 	}
 
+	isSecondary := make([]bool, len(data))
+	hasSecondary := false
+	hasPrimary := false
+
+	if config.DualAxis || len(config.SecondarySeries) > 0 {
+		if len(config.SecondarySeries) > 0 {
+			for _, idx := range config.SecondarySeries {
+				if idx >= 0 && idx < len(data) {
+					isSecondary[idx] = true
+				}
+			}
+		} else if len(data) > 1 {
+			for i := 1; i < len(data); i++ {
+				isSecondary[i] = true
+			}
+		}
+		for _, sec := range isSecondary {
+			if sec {
+				hasSecondary = true
+			} else {
+				hasPrimary = true
+			}
+		}
+	}
+	dualAxisActive := hasPrimary && hasSecondary
+
 	minimum, maximum := math.Inf(1), math.Inf(-1)
+	secMinimum, secMaximum := math.Inf(1), math.Inf(-1)
 	for i := range data {
 		minVal, maxVal := minMaxFloat64Slice(data[i])
-		if minVal < minimum {
-			minimum = minVal
+		if dualAxisActive && isSecondary[i] {
+			if minVal < secMinimum {
+				secMinimum = minVal
+			}
+			if maxVal > secMaximum {
+				secMaximum = maxVal
+			}
+		} else {
+			if minVal < minimum {
+				minimum = minVal
+			}
+			if maxVal > maximum {
+				maximum = maxVal
+			}
 		}
-		if maxVal > maximum {
-			maximum = maxVal
-		}
+	}
+	if math.IsInf(minimum, 1) || math.IsInf(maximum, -1) {
+		minimum, maximum = 0, 0
 	}
 	if config.LowerBound != nil && *config.LowerBound < minimum {
 		minimum = *config.LowerBound
@@ -106,8 +145,27 @@ func PlotMany(data [][]float64, options ...Option) string {
 	}
 	interval := math.Abs(maximum - minimum)
 
+	if dualAxisActive {
+		if math.IsInf(secMinimum, 1) || math.IsInf(secMaximum, -1) {
+			secMinimum, secMaximum = 0, 0
+		}
+		if config.SecondaryLowerBound != nil && *config.SecondaryLowerBound < secMinimum {
+			secMinimum = *config.SecondaryLowerBound
+		}
+		if config.SecondaryUpperBound != nil && *config.SecondaryUpperBound > secMaximum {
+			secMaximum = *config.SecondaryUpperBound
+		}
+	}
+	secInterval := math.Abs(secMaximum - secMinimum)
+
 	if config.Height <= 0 {
-		config.Height = calculateHeight(interval)
+		if interval > 0 {
+			config.Height = calculateHeight(interval)
+		} else if dualAxisActive && secInterval > 0 {
+			config.Height = calculateHeight(secInterval)
+		} else {
+			config.Height = calculateHeight(0)
+		}
 	}
 
 	if config.Offset <= 0 {
@@ -127,7 +185,30 @@ func PlotMany(data [][]float64, options ...Option) string {
 	intmax2 := int(max2)
 
 	rows := int(math.Abs(float64(intmax2 - intmin2)))
-	width := lenMax + config.Offset
+	if rows == 0 && dualAxisActive && secInterval > 0 {
+		var secRatio float64
+		if secInterval != 0 {
+			secRatio = float64(config.Height) / secInterval
+		} else {
+			secRatio = 1
+		}
+		rows = int(math.Abs(float64(round(secMaximum*secRatio) - round(secMinimum*secRatio))))
+	}
+	if rows == 0 && config.Height > 0 {
+		rows = config.Height
+	}
+
+	var rightAxisCol int
+	var width int
+	if dualAxisActive {
+		rightAxisCol = config.Offset + lenMax - 1
+		if lenMax <= 1 {
+			rightAxisCol = config.Offset + 1
+		}
+		width = rightAxisCol + 2
+	} else {
+		width = lenMax + config.Offset
+	}
 
 	type cell struct {
 		Text  string
@@ -175,14 +256,12 @@ func PlotMany(data [][]float64, options ...Option) string {
 	}
 
 	// calculate Y-axis values and the width when formatted using the YAxisValueFormatter
-	for y := intmin2; y < intmax2+1; y++ {
+	for w := 0; w <= rows; w++ {
 		var magnitude float64
 		if rows > 0 && interval > 0 {
-			magnitude = maximum - (float64(y-intmin2) * interval / float64(rows))
-		} else if interval == 0 {
-			magnitude = minimum
+			magnitude = maximum - (float64(w) * interval / float64(rows))
 		} else {
-			magnitude = float64(y)
+			magnitude = minimum
 		}
 		magnitudes = append(magnitudes, magnitude)
 
@@ -219,6 +298,77 @@ func PlotMany(data [][]float64, options ...Option) string {
 		plot[w][config.Offset-1].Color = config.AxisColor
 	}
 
+	if dualAxisActive {
+		var secPrecision uint = 2
+		if config.SecondaryPrecision != nil {
+			secPrecision = *config.SecondaryPrecision
+		} else if config.Precision != nil {
+			secPrecision = *config.Precision
+		} else {
+			secLogMax := math.Log10(math.Max(math.Abs(secMaximum), math.Abs(secMinimum)))
+			if secMinimum == 0 && secMaximum == 0 {
+				secLogMax = -1
+			}
+			if secLogMax < 0 {
+				if math.Mod(secLogMax, 1) != 0 {
+					secPrecision += uint(math.Abs(secLogMax))
+				} else {
+					secPrecision += uint(math.Abs(secLogMax) - 1.0)
+				}
+			} else if secLogMax > 2 {
+				secPrecision = 0
+			}
+		}
+
+		secMagnitudes := make([]float64, 0, rows+1)
+		secMaxNumLength := 0
+		for w := 0; w <= rows; w++ {
+			var secMag float64
+			if rows > 0 && secInterval > 0 {
+				secMag = secMaximum - (float64(w) * secInterval / float64(rows))
+			} else {
+				secMag = secMinimum
+			}
+			secMagnitudes = append(secMagnitudes, secMag)
+
+			var str string
+			if config.SecondaryYAxisValueFormatter != nil {
+				str = config.SecondaryYAxisValueFormatter(secMag)
+			} else {
+				str = fmt.Sprintf("%0.*f", secPrecision, secMag)
+			}
+			l := utf8.RuneCountInString(str)
+			if l > secMaxNumLength {
+				secMaxNumLength = l
+			}
+		}
+
+		secAxisColor := config.SecondaryAxisColor
+		if secAxisColor == Default {
+			secAxisColor = config.AxisColor
+		}
+		secLabelColor := config.SecondaryLabelColor
+		if secLabelColor == Default {
+			secLabelColor = config.LabelColor
+		}
+
+		for w, secMag := range secMagnitudes {
+			var secVal string
+			if config.SecondaryYAxisValueFormatter != nil {
+				secVal = config.SecondaryYAxisValueFormatter(secMag)
+			} else {
+				secVal = fmt.Sprintf("%0.*f", secPrecision, secMag)
+			}
+			padding := strings.Repeat(" ", secMaxNumLength-utf8.RuneCountInString(secVal))
+			secLabel := " " + padding + secVal
+
+			plot[w][rightAxisCol].Text = "├"
+			plot[w][rightAxisCol].Color = secAxisColor
+			plot[w][rightAxisCol+1].Text = secLabel
+			plot[w][rightAxisCol+1].Color = secLabelColor
+		}
+	}
+
 	// When a gradient is configured, precompute a color for each plot row from
 	// its magnitude so points are colored by value instead of by series.
 	var rowColors []AnsiColor
@@ -244,6 +394,33 @@ func PlotMany(data [][]float64, options ...Option) string {
 		return seriesColor
 	}
 
+	getY := func(seriesIdx int, val float64) int {
+		if dualAxisActive && isSecondary[seriesIdx] {
+			if secInterval != 0 && rows > 0 {
+				y := int(round(float64(rows) * (val - secMinimum) / secInterval))
+				if y < 0 {
+					return 0
+				}
+				if y > rows {
+					return rows
+				}
+				return y
+			}
+			return rows / 2
+		}
+		if interval != 0 && rows > 0 {
+			y := int(round(val*ratio) - min2)
+			if y < 0 {
+				return 0
+			}
+			if y > rows {
+				return rows
+			}
+			return y
+		}
+		return rows / 2
+	}
+
 	for i := range data {
 		series := data[i]
 
@@ -258,9 +435,11 @@ func PlotMany(data [][]float64, options ...Option) string {
 		var y0, y1 int
 
 		if !math.IsNaN(series[0]) {
-			y0 = int(round(series[0]*ratio) - min2)
-			plot[rows-y0][config.Offset-1].Text = "┼" // first value
-			plot[rows-y0][config.Offset-1].Color = config.AxisColor
+			y0 = getY(i, series[0])
+			if !dualAxisActive || !isSecondary[i] {
+				plot[rows-y0][config.Offset-1].Text = "┼" // first value
+				plot[rows-y0][config.Offset-1].Color = config.AxisColor
+			}
 		}
 
 		for x := 0; x < len(series)-1; x++ { // plot the line
@@ -272,21 +451,21 @@ func PlotMany(data [][]float64, options ...Option) string {
 			}
 
 			if math.IsNaN(d1) && !math.IsNaN(d0) {
-				y0 = int(round(d0*ratio) - float64(intmin2))
+				y0 = getY(i, d0)
 				plot[rows-y0][x+config.Offset].Text = charSet.EndCap
 				plot[rows-y0][x+config.Offset].Color = pickColor(rows-y0, color)
 				continue
 			}
 
 			if math.IsNaN(d0) && !math.IsNaN(d1) {
-				y1 = int(round(d1*ratio) - float64(intmin2))
+				y1 = getY(i, d1)
 				plot[rows-y1][x+config.Offset].Text = charSet.StartCap
 				plot[rows-y1][x+config.Offset].Color = pickColor(rows-y1, color)
 				continue
 			}
 
-			y0 = int(round(d0*ratio) - float64(intmin2))
-			y1 = int(round(d1*ratio) - float64(intmin2))
+			y0 = getY(i, d0)
+			y1 = getY(i, d1)
 
 			if y0 == y1 {
 				plot[rows-y0][x+config.Offset].Text = charSet.Horizontal
@@ -311,6 +490,11 @@ func PlotMany(data [][]float64, options ...Option) string {
 			for y := start; y <= end; y++ {
 				plot[rows-y][x+config.Offset].Color = pickColor(rows-y, color)
 			}
+		}
+
+		if dualAxisActive && isSecondary[i] && len(series) >= lenMax && !math.IsNaN(series[len(series)-1]) {
+			yLast := getY(i, series[len(series)-1])
+			plot[rows-yLast][rightAxisCol].Text = "┼"
 		}
 	}
 

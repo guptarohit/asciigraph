@@ -74,9 +74,17 @@ type config struct {
 	LineEnding             string
 	SeriesChars            []CharSet
 	YAxisValueFormatter    YAxisValueFormatterFunc
-	XAxisRange             *[2]float64
-	XAxisTickCount         int
-	XAxisValueFormatter    XAxisValueFormatterFunc
+	XAxisRange                   *[2]float64
+	XAxisTickCount               int
+	XAxisValueFormatter          XAxisValueFormatterFunc
+	DualAxis                     bool
+	SecondarySeries              []int
+	SecondaryLowerBound          *float64
+	SecondaryUpperBound          *float64
+	SecondaryPrecision           *uint
+	SecondaryAxisColor           AnsiColor
+	SecondaryLabelColor          AnsiColor
+	SecondaryYAxisValueFormatter YAxisValueFormatterFunc
 }
 
 // YAxisValueFormatterFunc formats a single Y-axis value.
@@ -270,3 +278,65 @@ func XAxisValueFormatter(f XAxisValueFormatterFunc) Option {
 		c.XAxisValueFormatter = f
 	})
 }
+
+// DualAxis enables dual Y-axis scaling for multi-series plots.
+// When enabled, series are plotted across two independent vertical scales.
+// By default, series 0 uses the primary (left) axis and subsequent series
+// use the secondary (right) axis, unless SecondarySeries is specified.
+func DualAxis(enabled ...bool) Option {
+	val := true
+	if len(enabled) > 0 {
+		val = enabled[0]
+	}
+	return optionFunc(func(c *config) {
+		c.DualAxis = val
+	})
+}
+
+// SecondarySeries sets the 0-based series indices mapped to the secondary (right) Y-axis.
+// Setting this option enables dual Y-axis mode.
+func SecondarySeries(indices ...int) Option {
+	return optionFunc(func(c *config) {
+		c.DualAxis = true
+		c.SecondarySeries = indices
+	})
+}
+
+// SecondaryLowerBound sets the minimum value for the secondary vertical axis.
+// It is ignored if the secondary series contains a lower value.
+func SecondaryLowerBound(min float64) Option {
+	return optionFunc(func(c *config) { c.SecondaryLowerBound = &min })
+}
+
+// SecondaryUpperBound sets the maximum value for the secondary vertical axis.
+// It is ignored if the secondary series contains a larger value.
+func SecondaryUpperBound(max float64) Option {
+	return optionFunc(func(c *config) { c.SecondaryUpperBound = &max })
+}
+
+// SecondaryPrecision sets the precision for secondary Y-axis labels.
+func SecondaryPrecision(p uint) Option {
+	return optionFunc(func(c *config) { c.SecondaryPrecision = &p })
+}
+
+// SecondaryAxisColor sets the secondary axis line and tick color.
+func SecondaryAxisColor(ac AnsiColor) Option {
+	return optionFunc(func(c *config) {
+		c.SecondaryAxisColor = ac
+	})
+}
+
+// SecondaryLabelColor sets the secondary axis label color.
+func SecondaryLabelColor(ac AnsiColor) Option {
+	return optionFunc(func(c *config) {
+		c.SecondaryLabelColor = ac
+	})
+}
+
+// SecondaryYAxisValueFormatter formats values printed on the secondary Y-axis.
+func SecondaryYAxisValueFormatter(f YAxisValueFormatterFunc) Option {
+	return optionFunc(func(c *config) {
+		c.SecondaryYAxisValueFormatter = f
+	})
+}
+

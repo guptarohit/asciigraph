@@ -40,6 +40,7 @@ var (
 	xAxisMin           = math.NaN()
 	xAxisMax           = math.NaN()
 	xAxisTicks         int
+	enableDualAxis     bool
 	lastGraphLines     int // Track last graph height for clearing in realtime mode
 )
 
@@ -140,6 +141,7 @@ func main() {
 	flag.Float64Var(&xAxisMin, "xmin", xAxisMin, "x-axis minimum `value`")
 	flag.Float64Var(&xAxisMax, "xmax", xAxisMax, "x-axis maximum `value`")
 	flag.IntVar(&xAxisTicks, "xt", xAxisTicks, "x-axis `tick count` (default 5, minimum 2)")
+	flag.BoolVar(&enableDualAxis, "da", enableDualAxis, "enables `dual Y-axis` scaling for multi-series plots")
 
 	flag.Parse()
 
@@ -227,6 +229,9 @@ func main() {
 						opts = append(opts, asciigraph.XAxisTickCount(xAxisTicks))
 					}
 				}
+				if enableDualAxis {
+					opts = append(opts, asciigraph.DualAxis())
+				}
 				plot := asciigraph.PlotMany(seriesCopy, opts...)
 				// Clear previous graph in realtime mode
 				clearPreviousGraph()
@@ -276,6 +281,9 @@ func main() {
 			if xAxisTicks > 0 {
 				opts = append(opts, asciigraph.XAxisTickCount(xAxisTicks))
 			}
+		}
+		if enableDualAxis {
+			opts = append(opts, asciigraph.DualAxis())
 		}
 		plot := asciigraph.PlotMany(series, opts...)
 
