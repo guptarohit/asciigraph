@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.10.1](https://github.com/guptarohit/asciigraph/compare/v0.10.0...v0.10.1) (2026-10-17)
+
+
+### Fixed
+
+* **caption:** count runes when centering text ([#91](https://github.com/guptarohit/asciigraph/issues/91)) ([2fd3e0c](https://github.com/guptarohit/asciigraph/commit/2fd3e0c0c581057d7545b511e14023619b4597ca))
+
 ## [0.10.0](https://github.com/guptarohit/asciigraph/compare/v0.9.0...v0.10.0) (2026-06-21)
 
 
